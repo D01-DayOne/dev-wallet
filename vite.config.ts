@@ -34,6 +34,6 @@ export default defineConfig({
       },
       manifest: getManifest({ dev }),
       useDynamicUrlWebAccessibleResources: false,
-    }),
+    }) as any,
   ],
 })
