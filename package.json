@@ -99,7 +99,7 @@
     "solmate": "^6.2.0",
     "svg-path-commander": "^2.0.5",
     "typescript": "^5.0.4",
-    "vite": "^5.2.8",
+    "vite": "^5.2.14",
     "vite-plugin-crx-hot-reload": "^1.0.4",
     "vite-tsconfig-paths": "^4.3.2",
     "web-ext": "^7.6.1",

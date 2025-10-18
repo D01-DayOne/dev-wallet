@@ -322,7 +322,7 @@ function ParameterLabel({
   truncateLength: number
   param: AbiParameter
 }) {
-  const internalTypeArray = param.internalType?.split('.').join('').split(' ')
+  const internalTypeArray = param.internalType?.split('.')?.join('')?.split(' ')
   const internalType = internalTypeArray?.[internalTypeArray.length - 1]
   const label = `${internalType || param.type} ${
     param.name || index.toString()

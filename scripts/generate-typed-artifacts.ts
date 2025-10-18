@@ -9,6 +9,7 @@ const writer = generated.writer()
 
 const paths = await globby([
   join(import.meta.dir, '../test/contracts/out/**/*.json'),
+  `!${join(import.meta.dir, '../test/contracts/out/build-info/**')}`,
 ])
 
 await Promise.all(
