@@ -53,7 +53,7 @@ export function setupContextMenu() {
       })
     } else if (menuItemId === 'open-test-dapp') {
       chrome.tabs.create({
-        url: 'http://localhost:5173',
+        url: 'http://localhost:5199',
       })
     }
     // TODO: Match selected text.

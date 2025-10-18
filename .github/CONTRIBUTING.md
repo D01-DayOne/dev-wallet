@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in contributing to Rivet! Please take a moment to review this document **before submitting a pull request.** If you want to contribute, but aren't sure where to start, you can create a [new discussion](https://github.com/sideris/ribbit/discussions).
+Thanks for your interest in contributing to Ribbit! Please take a moment to review this document **before submitting a pull request.** If you want to contribute, but aren't sure where to start, you can create a [new discussion](https://github.com/sideris/ribbit/discussions).
 
 > **Note** **Please ask first before starting work on any significant new features.**
 >
