@@ -73,8 +73,8 @@ export default function OnboardingRun() {
           </Box>
         </Box>
         <Text color="text/secondary" size="14px">
-          When DW: DevWallet detects the Anvil instance is running, we will redirect
-          you.
+          When DW: DevWallet detects the Anvil instance is running, we will
+          redirect you.
         </Text>
       </Stack>
     </OnboardingContainer>
