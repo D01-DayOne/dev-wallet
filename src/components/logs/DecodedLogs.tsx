@@ -128,7 +128,7 @@ function LogRow({ index, log }: { index: number; log: Log }) {
       className={styles.item}
       value={log.logIndex?.toString() ?? index.toString()}
     >
-      <Accordion.Header asChild>
+      <Accordion.Header>
         <Accordion.Trigger asChild className={styles.trigger}>
           <Box
             as="button"
@@ -184,7 +184,7 @@ function LogRow({ index, log }: { index: number; log: Log }) {
           </Box>
         </Accordion.Trigger>
       </Accordion.Header>
-      <Accordion.Content asChild>
+      <Accordion.Content>
         <Box className={styles.content}>
           <Inset space="8px">
             <Stack gap="20px">

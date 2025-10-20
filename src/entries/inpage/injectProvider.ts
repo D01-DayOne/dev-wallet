@@ -7,6 +7,18 @@ import { getProvider } from '~/provider'
 const backgroundMessenger = getMessenger('background:inpage')
 const walletMessenger = getMessenger('wallet:inpage')
 
+// Generate SVG icon based on BrandIcon design
+function generateBrandIcon(): `data:image/${string}` {
+  const svg = `<svg viewBox="0 0 29 29" xmlns="http://www.w3.org/2000/svg">
+    <path d="m14.5 0 12.557 7.25v14.5L14.5 29 1.943 21.75V7.25L14.5 0Z" fill="white"/>
+    <circle cx="14.658" cy="14.342" r="6.462" fill="black"/>
+    <circle cx="14.658" cy="14.342" r="3.31" fill="white"/>
+  </svg>`
+  return `data:image/svg+xml,${encodeURIComponent(
+    svg,
+  )}` as `data:image/${string}`
+}
+
 export function injectProvider() {
   const provider = getProvider({
     host: window.location.host,
@@ -26,7 +38,7 @@ export function injectProvider() {
   // Announce provider
   announceProvider({
     info: {
-      icon: 'data:image/svg+xml,<svg width="337" height="337" viewBox="0 0 337 337" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="337" height="337" fill="black"/><path d="M169 72L253.004 120.5V217.5L169 266L84.9955 217.5V120.5L169 72Z" fill="white"/><circle cx="170.054" cy="167.946" r="43.2283" fill="black"/><circle cx="170.054" cy="167.946" r="22.1413" fill="white"/></svg>',
+      icon: generateBrandIcon(),
       name: 'DW: DevWallet',
       rdns: 'wallet.devwallet',
       uuid: uuidv4(),

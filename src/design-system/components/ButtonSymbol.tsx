@@ -2,7 +2,6 @@ import { forwardRef } from 'react'
 
 import type { UnionOmit } from '~/types/utils'
 
-import { Tooltip } from '../../components'
 import type { SymbolName } from '../tokens'
 import { ButtonRoot, type ButtonRootProps } from './Button'
 import type { ButtonHeight, ButtonVariant } from './Button.css'
@@ -77,7 +76,10 @@ export const ButtonSymbol = forwardRef<HTMLDivElement, ButtonSymbolProps>(
   ) => {
     const { height = '36px', variant = 'solid invert' } = rootProps
     return (
-      <Tooltip label={label}>
+      <div
+        title={label}
+        style={{ height: '100%', width: '100%', display: 'flex' }}
+      >
         <ButtonRoot
           ref={ref}
           aria-label={label}
@@ -92,7 +94,7 @@ export const ButtonSymbol = forwardRef<HTMLDivElement, ButtonSymbolProps>(
             {...symbolProps}
           />
         </ButtonRoot>
-      </Tooltip>
+      </div>
     )
   },
 )

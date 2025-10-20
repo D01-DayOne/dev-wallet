@@ -11,7 +11,7 @@ import {
   parseUnits,
 } from 'viem'
 
-import { LabelledContent, TabsContent, TabsList, Tooltip } from '~/components'
+import { TabsContent, TabsList, Tooltip } from '~/components'
 import * as Form from '~/components/form'
 import { Spinner } from '~/components/svgs'
 import {
@@ -42,23 +42,33 @@ export default function AccountDetails() {
   if (!address) return null
   return (
     <>
-      <Box display="flex" alignItems="center" style={{ height: '40px' }}>
-        <Inset horizontal="4px">
-          <Inline gap="4px">
-            <Button.Symbol
-              label="Back"
+      <Box paddingHorizontal="4px" paddingVertical="12px">
+        <Inline gap="4px" alignVertical="center" wrap={false}>
+          <Box
+            style={{
+              width: '24px',
+              height: '24px',
+              flexShrink: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Button
+              type="button"
               onClick={() => navigate(-1)}
-              symbol="chevron.left"
-              height="24px"
               variant="ghost primary"
-            />
-            <Box>
-              <LabelledContent label="Account">
-                <Text size="11px">{address}</Text>
-              </LabelledContent>
-            </Box>
-          </Inline>
-        </Inset>
+            >
+              ←
+            </Button>
+          </Box>
+          <Stack gap="2px" width="full">
+            <Text color="text/tertiary" size="9px">
+              Account
+            </Text>
+            <Text.Truncated size="11px">{address}</Text.Truncated>
+          </Stack>
+        </Inline>
       </Box>
       <Separator />
       <Inset horizontal="8px">

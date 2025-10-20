@@ -2,7 +2,6 @@ import { type ReactNode, useLayoutEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { type Hex, formatGwei } from 'viem'
 
-import { Tooltip } from '~/components'
 import { BrandIcon } from '~/components/svgs'
 import { useAppMeta } from '~/contexts'
 import {
@@ -149,11 +148,11 @@ function Account() {
         <Inset horizontal="8px">
           {account && (
             <HeaderItem label="Account">
-              <Tooltip label={account.address}>
+              <Box title={account.address}>
                 <Text.Truncated key={key} size="11px">
                   {account.address}
                 </Text.Truncated>
-              </Tooltip>
+              </Box>
             </HeaderItem>
           )}
         </Inset>
@@ -196,23 +195,24 @@ function DappConnection() {
 
 function SettingsButton() {
   return (
-    <Tooltip label="Settings" height="full">
-      <Link to="/settings">
-        <Box
-          alignItems="center"
-          as="button"
-          backgroundColor={{
-            hover: 'surface/fill/quarternary',
-          }}
-          display="flex"
-          justifyContent="center"
-          height="full"
-          style={{ width: '32px' }}
-        >
-          <SFSymbol size="14px" symbol="gear" weight="medium" />
-        </Box>
-      </Link>
-    </Tooltip>
+    <Link
+      to="/settings"
+      style={{ height: '100%', display: 'flex', alignItems: 'center' }}
+    >
+      <Box
+        alignItems="center"
+        as="button"
+        backgroundColor={{
+          hover: 'surface/fill/quarternary',
+        }}
+        display="flex"
+        justifyContent="center"
+        title="Settings"
+        style={{ width: '32px', height: '32px' }}
+      >
+        <SFSymbol size="14px" symbol="gear" weight="medium" />
+      </Box>
+    </Link>
   )
 }
 

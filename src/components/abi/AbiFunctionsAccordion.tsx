@@ -51,7 +51,7 @@ export function AbiFunctionsAccordion({
           className={styles.item}
           value={formatAbiItem(abiItem)}
         >
-          <Accordion.Header asChild>
+          <Accordion.Header>
             <Accordion.Trigger asChild className={styles.trigger}>
               <Box
                 as="button"
@@ -94,7 +94,7 @@ export function AbiFunctionsAccordion({
               </Box>
             </Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content asChild>
+          <Accordion.Content>
             <Box className={styles.content}>
               <Inset space="8px">
                 <AbiFunctionContent abiFunction={abiItem} address={address} />

@@ -59,12 +59,15 @@ export default function Layout() {
         style={{ height: showHeader ? `calc(100% - ${headerHeight})` : '100%' }}
       >
         {showNetworkOfflineDialog && <NetworkOfflineDialog />}
-        {pendingRequests.length > 0 && (
+        {pendingRequests.length > 0 ? (
           <PendingRequest request={pendingRequest} />
+        ) : (
+          <>
+            <Box height="full">
+              <Outlet />
+            </Box>
+          </>
         )}
-        <Box height="full">
-          <Outlet />
-        </Box>
       </Box>
     </Box>
   )

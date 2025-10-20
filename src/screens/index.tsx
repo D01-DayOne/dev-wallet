@@ -19,7 +19,6 @@ import {
   LoadMore,
   TabsContent,
   TabsList,
-  Tooltip,
   useVirtualList,
 } from '~/components'
 import * as Form from '~/components/form'
@@ -173,7 +172,7 @@ function AccountRow({ account }: { account: Account }) {
               {account.displayName && (
                 <Text size="12px">{account.displayName}</Text>
               )}
-              <Tooltip label={account.address}>
+              <Box title={account.address}>
                 <Text
                   color={account.displayName ? 'text/tertiary' : undefined}
                   size="12px"
@@ -182,7 +181,7 @@ function AccountRow({ account }: { account: Account }) {
                     ? truncate(account.address)
                     : account.address}
                 </Text>
-              </Tooltip>
+              </Box>
               {account.address && (
                 <Box position="absolute" style={{ right: -24, top: -6 }}>
                   <Button.Copy
@@ -220,25 +219,22 @@ function AccountRow({ account }: { account: Account }) {
               />
             )}
             {!active && (
-              <Button.Symbol
-                label="Switch Account"
-                height="24px"
+              <Button
+                type="button"
                 onClick={() => setAccount({ account, setActive: true })}
-                symbol="arrow.left.arrow.right"
                 variant={active ? 'solid invert' : 'stroked fill'}
-              />
+              >
+                ⇄
+              </Button>
             )}
             <Link to={`account/${account.address}`}>
-              <Box style={{ width: active ? '52px' : '24px' }}>
-                <Button.Symbol
-                  label="Account Details"
-                  height="24px"
-                  width="full"
-                  onClick={() => {}}
-                  symbol="arrow.right"
-                  variant={active ? 'solid invert' : 'stroked fill'}
-                />
-              </Box>
+              <Button
+                type="button"
+                variant={active ? 'solid invert' : 'stroked fill'}
+                onClick={() => {}}
+              >
+                →
+              </Button>
             </Link>
           </Inline>
         </Box>
@@ -818,19 +814,19 @@ function Transactions() {
                         )}
                       </Inline>
                       <Column alignVertical="center">
-                        <Tooltip side="bottom" label={transaction.from}>
+                        <Box title={transaction.from}>
                           <Text.Truncated size="12px">
                             {transaction.from}
                           </Text.Truncated>
-                        </Tooltip>
+                        </Box>
                       </Column>
                       <Column alignVertical="center">
                         {transaction.to ? (
-                          <Tooltip side="bottom" label={transaction.to}>
+                          <Box title={transaction.to}>
                             <Text.Truncated size="12px">
                               {transaction.to}
                             </Text.Truncated>
-                          </Tooltip>
+                          </Box>
                         ) : (
                           <Text color="text/tertiary" size="11px" wrap={false}>
                             Deploy Contract
