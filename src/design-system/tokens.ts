@@ -130,7 +130,7 @@ export const backgroundColor = {
       },
     },
   },
-  'surface/fill/ribbit/active': {
+  'surface/fill/devwallet/active': {
     light: {
       value: '#55b350',
       scheme: 'light',

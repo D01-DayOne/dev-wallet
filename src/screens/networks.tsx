@@ -142,7 +142,7 @@ function NetworkRow({
   return (
     <Fragment key={network.rpcUrl}>
       <Box
-        backgroundColor={active ? 'surface/fill/ribbit/active' : undefined}
+        backgroundColor={active ? 'surface/fill/devwallet/active' : undefined}
         paddingHorizontal="8px"
         paddingVertical="8px"
       >

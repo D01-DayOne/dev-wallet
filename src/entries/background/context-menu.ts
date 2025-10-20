@@ -3,10 +3,10 @@ export function setupContextMenu() {
     .setPanelBehavior({ openPanelOnActionClick: true })
     .catch((error) => console.error(error))
 
-  // TODO: Only create context menu if selected text is "openable" in Rivet.
+  // TODO: Only create context menu if selected text is "openable" in DW: DevWallet.
   // chrome.contextMenus.create({
   //   id: 'open',
-  //   title: 'Open in Ribbit',
+  //   title: 'Open in DW: DevWallet',
   //   contexts: ['selection'],
   // })
 

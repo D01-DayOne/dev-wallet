@@ -17,7 +17,7 @@ export function NetworkOfflineDialog() {
           zIndex="dialogOverlay"
         />
       </Dialog.Overlay>
-      <Dialog.Content asChild>
+      <Dialog.Content asChild aria-describedby="network-offline-description">
         <Box
           alignItems="center"
           backgroundColor="surface/black@0.5"
@@ -45,7 +45,11 @@ export function NetworkOfflineDialog() {
           >
             <Inset horizontal="8px">
               <Stack gap="12px">
-                <Text size="12px">Anvil is disconnected.</Text>
+                <Box id="network-offline-description">
+                  <Text size="12px">
+                    Anvil is disconnected.
+                  </Text>
+                </Box>
                 <Text size="12px">
                   Once Anvil is reconnected, DevTools will automatically
                   reconnect.

@@ -419,7 +419,7 @@ function SendTransactionRequest(args: {
     account: transactionRequest.from ?? account_,
   })
 
-  const request = preparedRequest || {}
+  const request = preparedRequest || ({} as any)
   const {
     from,
     to,

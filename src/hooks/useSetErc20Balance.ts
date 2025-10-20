@@ -45,7 +45,7 @@ export function useSetErc20Balance() {
       value,
     }: SetErcBalanceParameters) {
       // TODO: Compose storage slot manipulation into an action.
-      // See https://github.com/paradigmxyz/rivet/pull/50#discussion_r1322267280
+      // See https://github.com/D01-DayOne/dev-wallet/pull/50#discussion_r1322267280
       let slotFound = false
       let slotGuess = 0n
 

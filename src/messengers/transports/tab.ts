@@ -106,9 +106,18 @@ function sendMessage<TPayload>(
   message: SendMessage<TPayload>,
   { tabId }: { tabId?: number } = {},
 ) {
-  if (!tabId) {
-    chrome.runtime.sendMessage(message)
-  } else {
-    chrome.tabs.sendMessage(tabId, message)
+  try {
+    if (!tabId) {
+      chrome.runtime.sendMessage(message)
+    } else {
+      chrome.tabs.sendMessage(tabId, message)
+    }
+  } catch (error) {
+    // Silently catch extension context invalidated errors
+    // This happens when extension is reloaded/disabled
+    if (error instanceof Error && error.message.includes('Extension context invalidated')) {
+      return
+    }
+    console.error('Failed to send message:', error)
   }
 }

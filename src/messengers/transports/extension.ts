@@ -35,12 +35,20 @@ export const createExtensionTransport = <TConnection extends string>(
       }
       chrome.runtime.onMessage.addListener(listener)
 
-      chrome.runtime.sendMessage({
-        connection: connection_ || connection,
-        topic: `> ${topic}`,
-        payload,
-        id,
-      })
+      try {
+        chrome.runtime.sendMessage({
+          connection: connection_ || connection,
+          topic: `> ${topic}`,
+          payload,
+          id,
+        })
+      } catch (error) {
+        if (error instanceof Error && error.message.includes('Extension context invalidated')) {
+          reject(new Error('Extension context invalidated'))
+          return
+        }
+        reject(error)
+      }
     })
   },
   reply<TPayload, TResponse>(
@@ -62,14 +70,21 @@ export const createExtensionTransport = <TConnection extends string>(
         sender,
         topic: message.topic,
       })
-        .then((response) =>
-          chrome.runtime.sendMessage({
-            connection: message.connection,
-            topic: repliedTopic,
-            payload: { response },
-            id: message.id,
-          }),
-        )
+        .then((response) => {
+          try {
+            chrome.runtime.sendMessage({
+              connection: message.connection,
+              topic: repliedTopic,
+              payload: { response },
+              id: message.id,
+            })
+          } catch (error) {
+            // Silently catch extension context invalidated errors
+            if (error instanceof Error && !error.message.includes('Extension context invalidated')) {
+              console.error('Failed to send message:', error)
+            }
+          }
+        })
         .catch((error_) => {
           // Errors do not serialize properly over `chrome.runtime.sendMessage`, so
           // we are manually serializing it to an object.
@@ -77,12 +92,19 @@ export const createExtensionTransport = <TConnection extends string>(
           for (const key of Object.getOwnPropertyNames(error_)) {
             error[key] = (<Error>error_)[<keyof Error>key]
           }
-          chrome.runtime.sendMessage({
-            connection: message.connection,
-            topic: repliedTopic,
-            payload: { error },
-            id: message.id,
-          })
+          try {
+            chrome.runtime.sendMessage({
+              connection: message.connection,
+              topic: repliedTopic,
+              payload: { error },
+              id: message.id,
+            })
+          } catch (error) {
+            // Silently catch extension context invalidated errors
+            if (error instanceof Error && !error.message.includes('Extension context invalidated')) {
+              console.error('Failed to send message:', error)
+            }
+          }
         })
     }
     chrome.runtime.onMessage.addListener(listener)

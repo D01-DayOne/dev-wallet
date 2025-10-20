@@ -152,7 +152,7 @@ function InstallExtension() {
           <Text> 3. Click "Load unpacked" in the top left corner </Text>
           <Text>
             {' '}
-            4. Select the `dist/dev` folder in Rivet's root directory{' '}
+            4. Select the `dist/dev` folder in DW: DevWallet's root directory{' '}
           </Text>
           <Text>
             5. You're good to go! Refresh this page again to show test dapp.
@@ -782,9 +782,9 @@ function SendCalls() {
             from: account,
             version: '1',
           },
-        ],
+        ] as any,
       })
-      setId(id as string)
+      setId(id as unknown as string)
     } catch (err) {
       setError(err as Error)
     }

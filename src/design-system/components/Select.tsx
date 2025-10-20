@@ -76,7 +76,6 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             ...textStylesForHeight[height],
           }),
         ]}
-        placeholder={placeholder}
         testId={testId}
         width="full"
         {...stylesForVariant[variant]}
