@@ -43,7 +43,10 @@ export const createExtensionTransport = <TConnection extends string>(
           id,
         })
       } catch (error) {
-        if (error instanceof Error && error.message.includes('Extension context invalidated')) {
+        if (
+          error instanceof Error &&
+          error.message.includes('Extension context invalidated')
+        ) {
           reject(new Error('Extension context invalidated'))
           return
         }
@@ -80,7 +83,10 @@ export const createExtensionTransport = <TConnection extends string>(
             })
           } catch (error) {
             // Silently catch extension context invalidated errors
-            if (error instanceof Error && !error.message.includes('Extension context invalidated')) {
+            if (
+              error instanceof Error &&
+              !error.message.includes('Extension context invalidated')
+            ) {
               console.error('Failed to send message:', error)
             }
           }
@@ -101,7 +107,10 @@ export const createExtensionTransport = <TConnection extends string>(
             })
           } catch (error) {
             // Silently catch extension context invalidated errors
-            if (error instanceof Error && !error.message.includes('Extension context invalidated')) {
+            if (
+              error instanceof Error &&
+              !error.message.includes('Extension context invalidated')
+            ) {
               console.error('Failed to send message:', error)
             }
           }

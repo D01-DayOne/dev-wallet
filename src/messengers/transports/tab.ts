@@ -115,7 +115,10 @@ function sendMessage<TPayload>(
   } catch (error) {
     // Silently catch extension context invalidated errors
     // This happens when extension is reloaded/disabled
-    if (error instanceof Error && error.message.includes('Extension context invalidated')) {
+    if (
+      error instanceof Error &&
+      error.message.includes('Extension context invalidated')
+    ) {
       return
     }
     console.error('Failed to send message:', error)
