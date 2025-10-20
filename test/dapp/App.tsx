@@ -782,9 +782,9 @@ function SendCalls() {
             from: account,
             version: '1',
           },
-        ],
+        ] as any,
       })
-      setId(id as string)
+      setId(id as unknown as string)
     } catch (err) {
       setError(err as Error)
     }

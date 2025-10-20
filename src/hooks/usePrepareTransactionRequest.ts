@@ -71,6 +71,7 @@ export function usePrepareTransactionRequest(
   args: GetPrepareTransactionRequestQueryOptionsParameters,
 ) {
   const queryOptions = usePrepareTransactionRequestQueryOptions(args)
+  // @ts-expect-error - viem types produce complex union
   return useQuery(queryOptions)
 }
 
