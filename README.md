@@ -1,11 +1,12 @@
-![cover](https://github.com/paradigmxyz/rivet/assets/1936207/5a8ddb02-c8cd-42ea-8af3-3d6e7201a29a)
-
 <p align="center"><strong>Developer wallet & DevTools for Anvil</strong></p>
 
 <div align="center">
-  <a href="https://chrome.google.com/webstore/detail/rivet/mobmnpcacgadhkjfelhpemphmmnggnod">
-    <img alt="Chrome Web Store Version" src="https://img.shields.io/chrome-web-store/v/mobmnpcacgadhkjfelhpemphmmnggnod">
-  </a>
+
+[//]: # (  <a href="https://chrome.google.com/webstore/detail/rivet/mobmnpcacgadhkjfelhpemphmmnggnod">)
+
+[//]: # (    <img alt="Chrome Web Store Version" src="https://img.shields.io/chrome-web-store/v/mobmnpcacgadhkjfelhpemphmmnggnod">)
+
+[//]: # (  </a>)
   <a href="https://github.com/D01-DayOne/dev-wallet/actions/workflows/on-push-to-main.yml">
     <img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/D01-DayOne/dev-wallet/on-push-to-main.yml">
   </a>
@@ -23,6 +24,13 @@ DW: DevWallet is a developer Wallet & DevTools for Anvil (akin to [Browser DevTo
 By integrating [EIP-6963: Multi Injected Provider Discovery](https://eips.ethereum.org/EIPS/eip-6963), DW: DevWallet is designed to be used alongside and with other consumer browser wallets like MetaMask or Rainbow to provide more engrained developer tooling and workflows for Ethereum.
 
 DW: DevWallet is aimed to be **contributor first & friendly**. If you would like to contribute, check out the [Contributing Guide](/.github/CONTRIBUTING.md).
+
+## Why was it forked?
+
+Development had slowed down and many issues were left open.
+
+Rivet is still the best dev tool that works well in the development flow of use
+
 
 ## Download
 
