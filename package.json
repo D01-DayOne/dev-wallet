@@ -1,9 +1,9 @@
 {
-  "name": "ribbit",
+  "name": "devwallet",
   "version": "0.0.14",
   "private": true,
   "extension": {
-    "name": "Ribbit",
+    "name": "DW: DevWallet",
     "description": "Developer Wallet & DevTools for Ethereum"
   },
   "scripts": {

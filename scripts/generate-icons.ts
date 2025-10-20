@@ -1,5 +1,5 @@
 /*
-  Generates PNG icons from the Ribbit SVG logo for all required sizes, replacing existing icon@* files.
+  Generates PNG icons from the DW: DevWallet SVG logo for all required sizes, replacing existing icon@* files.
   Requires `sharp` as a dependency. Install with: yarn add -D sharp
 */
 
@@ -8,7 +8,7 @@ import { dirname, resolve } from 'node:path'
 import sharp from 'sharp'
 
 const projectRoot = resolve(__dirname, '..')
-const svgPath = resolve(projectRoot, 'public', 'icons', 'ribbit-logo.svg')
+const svgPath = resolve(projectRoot, 'public', 'icons', 'devwallet-logo.svg')
 
 // Files to generate: both normal and -dev variants to keep manifest mappings intact
 const sizes = [16, 32, 48, 128]

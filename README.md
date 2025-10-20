@@ -6,23 +6,23 @@
   <a href="https://chrome.google.com/webstore/detail/rivet/mobmnpcacgadhkjfelhpemphmmnggnod">
     <img alt="Chrome Web Store Version" src="https://img.shields.io/chrome-web-store/v/mobmnpcacgadhkjfelhpemphmmnggnod">
   </a>
-  <a href="https://github.com/paradigmxyz/rivet/actions/workflows/on-push-to-main.yml">
-    <img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/paradigmxyz/rivet/on-push-to-main.yml">
+  <a href="https://github.com/D01-DayOne/dev-wallet/actions/workflows/on-push-to-main.yml">
+    <img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/D01-DayOne/dev-wallet/on-push-to-main.yml">
   </a>
-  <a href="https://github.com/paradigmxyz/rivet/blob/main/LICENSE">
-    <img alt="GitHub" src="https://img.shields.io/github/license/paradigmxyz/rivet">
+  <a href="https://github.com/D01-DayOne/dev-wallet/blob/main/LICENSE">
+    <img alt="GitHub" src="https://img.shields.io/github/license/D01-DayOne/dev-wallet">
   </a>
 </div>
 
-Forked and modified from Rivet (MIT licensed) by ParadigmXYZ. Original license retained.
+Forked and modified from [Rivet](https://github.com/paradigmxyz/rivet) (MIT licensed) by Paradigm. Original license retained.
 
-## What is Ribbit?
+## What is DW: DevWallet?
 
-Ribbit is a developer Wallet & DevTools for Anvil (akin to [Browser DevTools](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Tools_and_setup/What_are_browser_developer_tools#how_to_open_the_devtools_in_your_browser) or [React DevTools](https://react.dev/learn/react-developer-tools)). It is a browser extension that enables developers to inspect, debug, modify, and manipulate the state of Ethereum: accounts, blocks, contracts & the node itself. Ribbit is also compatible with any production dApp, meaning you can simulate any type of action from either an Account attached on the Anvil instance, or by "impersonating" another Account on the network.
+DW: DevWallet is a developer Wallet & DevTools for Anvil (akin to [Browser DevTools](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Tools_and_setup/What_are_browser_developer_tools#how_to_open_the_devtools_in_your_browser) or [React DevTools](https://react.dev/learn/react-developer-tools)). It is a browser extension that enables developers to inspect, debug, modify, and manipulate the state of Ethereum: accounts, blocks, contracts & the node itself. DW: DevWallet is also compatible with any production dApp, meaning you can simulate any type of action from either an Account attached on the Anvil instance, or by "impersonating" another Account on the network.
 
-By integrating [EIP-6963: Multi Injected Provider Discovery](https://eips.ethereum.org/EIPS/eip-6963), Ribbit is designed to be used alongside and with other consumer browser wallets like MetaMask or Rainbow to provide more engrained developer tooling and workflows for Ethereum.
+By integrating [EIP-6963: Multi Injected Provider Discovery](https://eips.ethereum.org/EIPS/eip-6963), DW: DevWallet is designed to be used alongside and with other consumer browser wallets like MetaMask or Rainbow to provide more engrained developer tooling and workflows for Ethereum.
 
-Ribbit is aimed to be **contributor first & friendly**. If you would like to contribute, check out the [Contributing Guide](/.github/CONTRIBUTING.md).
+DW: DevWallet is aimed to be **contributor first & friendly**. If you would like to contribute, check out the [Contributing Guide](/.github/CONTRIBUTING.md).
 
 ## Download
 
@@ -32,9 +32,9 @@ Ribbit is aimed to be **contributor first & friendly**. If you would like to con
 
 ### Nightly Release
 
-Ribbit is currently in active development. If you would like to try out the latest features, you can download the latest nightly build below:
+DW: DevWallet is currently in active development. If you would like to try out the latest features, you can download the latest nightly build below:
 
-- **Chromium (Chrome, Brave, Arc, etc)**: [Download](https://github.com/sideris/ribbit/releases/latest)
+- **Chromium (Chrome, Brave, Arc, etc)**: [Download](https://github.com/D01-DayOne/dev-wallet/releases/latest)
 
 <details>
   <summary>Setup Instructions</summary>
@@ -45,7 +45,7 @@ Ribbit is currently in active development. If you would like to try out the late
     <li>Enable <code>Developer Mode</code> in the top right corner</li>
     <li>Click <code>Load Unpacked</code> in the top left corner</li>
     <li>Select the unzipped folder</li>
-    <li>Done! You should now see the Ribbit extension in your browser</li>
+    <li>Done! You should now see the DW: DevWallet extension in your browser</li>
   </ol>
 </details>
 
@@ -104,12 +104,12 @@ Ribbit is currently in active development. If you would like to try out the late
 Clone the repo to your local machine using git:
 
 ```bash
-git clone https://github.com/paradigmxyz/rivet.git
+git clone https://github.com/D01-DayOne/dev-wallet.git
 ```
 
 ### 2. Install Bun
 
-Ribbit uses [Bun](https://bun.sh). You need to install **Bun v1 or higher**.
+DW: DevWallet uses [Bun](https://bun.sh). You need to install **Bun v1 or higher**.
 
 You can run the following commands in your terminal to check your local Bun version:
 
@@ -141,9 +141,9 @@ This will run a script that will build the Web Extension, start a dev server for
 
 ## Known Issues
 
-Ribbit uses the `window.ethereum` interface, which means it has some known conflicts with other wallets which also rely on `window.ethereum`. Once Dapps start to integrate [EIP-6963](https://eips.ethereum.org/EIPS/eip-6963) to handle multiple injected wallets, this should not be a problem anymore.
+DW: DevWallet uses the `window.ethereum` interface, which means it has some known conflicts with other wallets which also rely on `window.ethereum`. Once Dapps start to integrate [EIP-6963](https://eips.ethereum.org/EIPS/eip-6963) to handle multiple injected wallets, this should not be a problem anymore.
 
-For best results it is recommended to run Ribbit in its own Chrome profile, without any other conflicting browser wallets installed.
+For best results it is recommended to run DW: DevWallet in its own Chrome profile, without any other conflicting browser wallets installed.
 
 Helpful note: A fresh Chrome profile gets instantiated when running the dev script: `bun run dev`.
 
@@ -151,7 +151,7 @@ Helpful note: A fresh Chrome profile gets instantiated when running the dev scri
 
 If you're interested in contributing, please read the [contributing docs](/.github/CONTRIBUTING.md) **before submitting a pull request**.
 
-## Ribbit Authors
+## DW: DevWallet Authors
 - [@sideris](https://github.com/sideris) (PGSideris, [Twitter](https://twitter.com/PGSideris))
 
 ## Rivet Authors
