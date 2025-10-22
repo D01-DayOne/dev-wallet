@@ -7,10 +7,13 @@ jobs:
   artifacts:
     name: Artifacts
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
@@ -19,18 +22,30 @@ jobs:
         run: bun run build
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: extension
           path: dist/build
 
-      - name: Comment 
-        uses: tonyhallett/artifacts-url-comments@v1.1.0
-        if: ${{ github.event_name == 'pull_request' }}
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Comment on PR with artifact link
+        if: github.event_name == 'pull_request' || github.event.pull_request
+        uses: actions/github-script@v7
         with:
-            prefix: "Here is the extension:"
-            suffix: "Have a nice day. 🫡"
-            format: name
-            addTo: pull
+          script: |
+            const runId = context.runId;
+            const repo = context.repo;
+            const prNumber = context.payload.pull_request?.number || context.issue?.number;
+
+            if (!prNumber) {
+              console.log('No PR number found, skipping comment');
+              return;
+            }
+
+            const artifactUrl = `https://github.com/${repo.owner}/${repo.repo}/actions/runs/${runId}`;
+            const message = `Here is the extension:\n\n📦 [Download extension artifact](${artifactUrl})\n\nHave a nice day. 🫡`;
+
+            await github.rest.issues.createComment({
+              ...repo,
+              issue_number: prNumber,
+              body: message
+            });
