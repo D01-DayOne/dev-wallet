@@ -2,7 +2,7 @@ import { type ReactNode, useLayoutEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { type Hex, formatGwei } from 'viem'
 
-import { BrandIcon } from '~/components/svgs'
+import { DWLogo } from '~/components/svgs/DWLogo'
 import { useAppMeta } from '~/contexts'
 import {
   Box,
@@ -118,7 +118,7 @@ function HomeButton() {
         height="full"
         style={{ width: '36px' }}
       >
-        <BrandIcon size="22px" />
+        <DWLogo size="22px" />
       </Box>
     </Link>
   )

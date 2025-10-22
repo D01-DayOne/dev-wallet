@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-import { Cogs } from '~/components/svgs'
+import { DWLogo } from '~/components/svgs/DWLogo'
 import {
   Box,
   Button,
@@ -18,7 +18,7 @@ export default function OnboardingStart() {
       <Rows>
         <Row alignHorizontal="center">
           <Box>
-            <Cogs size="100%" />
+            <DWLogo size="200px" />
           </Box>
         </Row>
         <Row alignVertical="center">
