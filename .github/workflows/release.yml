@@ -1,7 +1,11 @@
-name: Release
+name: Release (Disabled)
+# Disabled workflow - uncomment 'on' triggers below to re-enable
 on:
-  workflow_call:
   workflow_dispatch:
+    inputs:
+      disabled:
+        description: 'This workflow is currently disabled'
+        required: false
 
 jobs:
   release:

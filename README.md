@@ -7,8 +7,8 @@
 [//]: # (    <img alt="Chrome Web Store Version" src="https://img.shields.io/chrome-web-store/v/mobmnpcacgadhkjfelhpemphmmnggnod">)
 
 [//]: # (  </a>)
-  <a href="https://github.com/D01-DayOne/dev-wallet/actions/workflows/on-push-to-main.yml">
-    <img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/D01-DayOne/dev-wallet/on-push-to-main.yml">
+  <a href="https://github.com/D01-DayOne/dev-wallet/actions/workflows/on-push-to-master.yml">
+    <img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/D01-DayOne/dev-wallet/on-push-to-master.yml">
   </a>
   <a href="https://github.com/D01-DayOne/dev-wallet/blob/main/LICENSE">
     <img alt="GitHub" src="https://img.shields.io/github/license/D01-DayOne/dev-wallet">
