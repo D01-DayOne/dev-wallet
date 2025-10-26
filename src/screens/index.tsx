@@ -133,6 +133,10 @@ function AccountRow({ account }: { account: Account }) {
   const { mutateAsync: setAccount } = useSetAccount()
 
   const active = activeAccount?.address === account.address
+  const truncatedAddress =
+    account.address && account.address.length > 0
+      ? truncate(account.address, { start: 6, end: 4 })
+      : undefined
   return (
     <Box
       backgroundColor={active ? 'surface/fill/tertiary' : undefined}
@@ -177,9 +181,7 @@ function AccountRow({ account }: { account: Account }) {
                   color={account.displayName ? 'text/tertiary' : undefined}
                   size="12px"
                 >
-                  {account.displayName
-                    ? truncate(account.address)
-                    : account.address}
+                  {truncatedAddress ?? account.address}
                 </Text>
               </Box>
               {account.address && (
