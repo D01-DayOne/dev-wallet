@@ -28,8 +28,31 @@ export async function parseFoundryBroadcast(
   file: File,
 ): Promise<FoundryDeployedContract[]> {
   try {
+    console.log('[Foundry] Parsing broadcast file:', file.name)
+
+    if (!file || file.size === 0) {
+      throw new Error('Broadcast file is empty or invalid')
+    }
+
     const broadcastContent = await file.text()
-    const broadcast = JSON.parse(broadcastContent) as FoundryBroadcast
+
+    let broadcast: FoundryBroadcast
+    try {
+      broadcast = JSON.parse(broadcastContent) as FoundryBroadcast
+    } catch (parseError) {
+      console.error('[Foundry] JSON parse error:', parseError)
+      throw new Error(
+        'Invalid JSON in broadcast file. Make sure the file is a valid Foundry broadcast.',
+      )
+    }
+
+    if (!broadcast.transactions || !Array.isArray(broadcast.transactions)) {
+      console.error('[Foundry] Invalid broadcast structure:', broadcast)
+      throw new Error(
+        'Broadcast file does not contain a valid transactions array',
+      )
+    }
+
     const contracts: FoundryDeployedContract[] = []
 
     for (const tx of broadcast.transactions) {
@@ -38,6 +61,11 @@ export async function parseFoundryBroadcast(
         tx.contractName &&
         tx.contractAddress
       ) {
+        console.log(
+          '[Foundry] Found deployed contract:',
+          tx.contractName,
+          tx.contractAddress,
+        )
         contracts.push({
           address: tx.contractAddress as Address,
           name: tx.contractName,
@@ -46,47 +74,255 @@ export async function parseFoundryBroadcast(
       }
     }
 
+    console.log(
+      '[Foundry] Extracted',
+      contracts.length,
+      'contracts from broadcast',
+    )
     return contracts
   } catch (error) {
-    console.error('Failed to parse Foundry broadcast file:', error)
-    throw error
+    console.error('[Foundry] Failed to parse broadcast file:', file.name, error)
+    if (error instanceof Error) {
+      throw new Error(`Failed to parse broadcast file: ${error.message}`)
+    }
+    throw new Error('Failed to parse broadcast file: Unknown error')
   }
 }
 
 /**
  * Load ABIs from selected files and match to contracts
  */
-export async function loadAbisFromFiles(
-  contracts: FoundryDeployedContract[],
-  files: File[],
-): Promise<FoundryDeployedContract[]> {
-  const contractsWithAbis = await Promise.all(
-    contracts.map(async (contract) => {
-      // Find matching ABI file by contract name
-      const matchingFile = files.find((file) => {
-        const fileName = file.name.replace('.json', '')
-        return fileName === contract.name
-      })
+type DirectoryFile = File & { webkitRelativePath?: string }
 
-      if (matchingFile) {
-        try {
-          const content = await matchingFile.text()
-          const json = JSON.parse(content) as { abi: Abi }
-          return {
-            ...contract,
-            abi: json.abi,
+const FOUND_BROADCAST_PATTERN = /broadcast\//
+const FOUND_RUN_LATEST_PATTERN = /\/31337\/run-latest\.json$/
+
+function getRelativePath(file: DirectoryFile) {
+  if (file.webkitRelativePath && file.webkitRelativePath.length > 0)
+    return file.webkitRelativePath
+  return file.name
+}
+
+function isBroadcastRunLatest(file: DirectoryFile) {
+  const relativePath = getRelativePath(file)
+  return (
+    FOUND_BROADCAST_PATTERN.test(relativePath) &&
+    FOUND_RUN_LATEST_PATTERN.test(relativePath)
+  )
+}
+
+function findArtifactFile(files: DirectoryFile[], contractName: string) {
+  const artifactSuffix = `out/${contractName}.sol/${contractName}.json`
+  return files.find((file) => getRelativePath(file).endsWith(artifactSuffix))
+}
+
+type FoundryArtifact = {
+  abi?: Abi
+  bytecode?: Hex | { object?: Hex }
+  deployedBytecode?: Hex | { object?: Hex }
+}
+
+function extractBytecode(artifact: FoundryArtifact) {
+  if (!artifact.bytecode && !artifact.deployedBytecode) return undefined
+
+  const normalize = (value?: Hex | { object?: Hex }) => {
+    if (!value) return undefined
+    if (typeof value === 'string') return value as Hex
+    return value.object
+  }
+
+  return normalize(artifact.deployedBytecode) ?? normalize(artifact.bytecode)
+}
+
+const MAX_FILES = 10000 // Prevent memory issues with huge directories
+const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB max per file
+
+export async function loadFoundryContractsFromDirectory(
+  inputFiles: FileList | File[],
+): Promise<FoundryDeployedContract[]> {
+  try {
+    console.log('[Foundry] Starting directory import...')
+
+    if (!inputFiles || inputFiles.length === 0) {
+      throw new Error('No files selected')
+    }
+
+    if (inputFiles.length > MAX_FILES) {
+      throw new Error(
+        `Too many files selected (${inputFiles.length}). Maximum is ${MAX_FILES}. Try selecting only the 'broadcast' and 'out' folders.`,
+      )
+    }
+
+    const files = Array.from(inputFiles as unknown as DirectoryFile[])
+    console.log('[Foundry] Total files in selection:', files.length)
+
+    // Filter to only relevant files first to reduce memory usage
+    const relevantFiles = files.filter((f) => {
+      const path = getRelativePath(f)
+      // Only include files from broadcast or out directories
+      return (
+        path.includes('broadcast/') ||
+        path.includes('out/') ||
+        path.includes('/broadcast/') ||
+        path.includes('/out/')
+      )
+    })
+
+    console.log(
+      '[Foundry] Filtered to relevant files:',
+      relevantFiles.length,
+      'from',
+      files.length,
+      'total',
+    )
+
+    const broadcastFiles = relevantFiles.filter(isBroadcastRunLatest)
+    console.log('[Foundry] Found broadcast files:', broadcastFiles.length)
+
+    if (broadcastFiles.length === 0) {
+      const samplePaths = relevantFiles
+        .slice(0, 20)
+        .map((f) => getRelativePath(f))
+      console.error('[Foundry] No broadcast files found. Sample paths:', samplePaths)
+      throw new Error(
+        'Could not find broadcast/31337/run-latest.json in the selected files. Make sure you selected a Foundry project directory containing the broadcast folder.',
+      )
+    }
+
+    const contractsByAddress = new Map<string, FoundryDeployedContract>()
+
+    for (const broadcastFile of broadcastFiles) {
+      try {
+        console.log(
+          '[Foundry] Processing broadcast file:',
+          getRelativePath(broadcastFile),
+        )
+
+        // Check file size before processing
+        if (broadcastFile.size > MAX_FILE_SIZE) {
+          console.warn(
+            '[Foundry] Skipping large broadcast file:',
+            getRelativePath(broadcastFile),
+            `(${Math.round(broadcastFile.size / 1024 / 1024)}MB)`,
+          )
+          continue
+        }
+
+        const contracts = await parseFoundryBroadcast(broadcastFile)
+        contracts.forEach((contract) => {
+          const key = contract.address.toLowerCase()
+          if (!contractsByAddress.has(key)) {
+            contractsByAddress.set(key, contract)
+            console.log(
+              '[Foundry] Registered contract:',
+              contract.name,
+              contract.address,
+            )
           }
+        })
+      } catch (error) {
+        console.error(
+          '[Foundry] Error processing broadcast file:',
+          getRelativePath(broadcastFile),
+          error,
+        )
+        throw error // Re-throw to stop processing
+      }
+    }
+
+    if (contractsByAddress.size === 0) {
+      throw new Error(
+        'No deployed contracts found in broadcast files. Make sure you have deployed contracts to chainId 31337.',
+      )
+    }
+
+    console.log(
+      '[Foundry] Loading ABIs for',
+      contractsByAddress.size,
+      'contracts...',
+    )
+
+    const enrichedContracts = await Promise.all(
+      Array.from(contractsByAddress.values()).map(async (contract) => {
+        const artifactFile = findArtifactFile(relevantFiles, contract.name)
+
+        if (!artifactFile) {
+          console.warn('[Foundry] No artifact file found for:', contract.name)
+          return contract
+        }
+
+        try {
+          // Check file size before processing
+          if (artifactFile.size > MAX_FILE_SIZE) {
+            console.warn(
+              '[Foundry] Skipping large artifact file for:',
+              contract.name,
+              `(${Math.round(artifactFile.size / 1024 / 1024)}MB)`,
+            )
+            return contract
+          }
+
+          console.log(
+            '[Foundry] Loading artifact for:',
+            contract.name,
+            'from',
+            getRelativePath(artifactFile),
+          )
+          const artifactContent = await artifactFile.text()
+
+          let artifact: FoundryArtifact
+          try {
+            artifact = JSON.parse(artifactContent) as FoundryArtifact
+          } catch (parseError) {
+            console.error(
+              '[Foundry] JSON parse error for artifact:',
+              contract.name,
+              parseError,
+            )
+            return contract // Return without ABI if artifact is invalid
+          }
+
+          const enriched = {
+            ...contract,
+            abi: artifact.abi ?? contract.abi,
+            bytecode: contract.bytecode ?? extractBytecode(artifact),
+          }
+
+          console.log(
+            '[Foundry] Successfully loaded artifact for:',
+            contract.name,
+            {
+              hasAbi: !!enriched.abi,
+              hasBytecode: !!enriched.bytecode,
+            },
+          )
+
+          return enriched
         } catch (error) {
           console.error(
-            `Failed to parse ABI for ${contract.name}:`,
+            '[Foundry] Failed to load artifact for',
+            contract.name,
+            ':',
             error,
           )
+          return contract // Return without ABI if loading fails
         }
-      }
+      }),
+    )
 
-      return contract
-    }),
-  )
+    const withAbi = enrichedContracts.filter((c) => c.abi).length
+    console.log('[Foundry] Import complete:', {
+      total: enrichedContracts.length,
+      withAbi,
+      withoutAbi: enrichedContracts.length - withAbi,
+    })
 
-  return contractsWithAbis
+    return enrichedContracts
+  } catch (error) {
+    console.error('[Foundry] Directory import failed:', error)
+    if (error instanceof Error) {
+      throw error // Re-throw with original message
+    }
+    throw new Error('Failed to import Foundry contracts: Unknown error')
+  }
 }

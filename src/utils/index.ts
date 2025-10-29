@@ -1,7 +1,10 @@
 export { decodeEventLogs_guessed, guessAbiItem } from './abi'
 export { capitalize } from './capitalize'
 export { deepEqual } from './deepEqual'
-export { loadAbisFromFiles, parseFoundryBroadcast } from './foundry'
+export {
+  loadFoundryContractsFromDirectory,
+  parseFoundryBroadcast,
+} from './foundry'
 export { isDomain } from './isDomain'
 export { normalizeAbiParametersValues } from './normalizeAbiParametersValues'
 export { truncate } from './truncate'

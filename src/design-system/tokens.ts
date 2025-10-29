@@ -418,9 +418,10 @@ export type Breakpoint = keyof typeof breakpoints
 
 export const fontFamily = {
   default:
-    "'SFPro', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
-  mono: "'SFMono', monospace",
+    "'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
+  mono: "'JetBrains Mono', monospace",
   address: "'Orbitron', monospace",
+  numeric: "'Orbitron', monospace",
 }
 export type FontFamily = keyof typeof fontFamily
 
@@ -649,7 +650,7 @@ export const strokeWeights = {
 }
 export type StrokeWeight = keyof typeof strokeWeights
 
-// Note: Don't forget to generate the symbols with `bun run symbols`!
+// Symbol names map to Lucide icons in SFSymbol.tsx.
 export const symbolNames = [
   'arrow.clockwise',
   'arrow.left.arrow.right',

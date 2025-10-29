@@ -66,7 +66,9 @@ export default function AccountDetails() {
             <Text color="text/tertiary" size="9px">
               Account
             </Text>
-            <Text.Truncated size="11px">{address}</Text.Truncated>
+            <Text.Truncated family="address" size="11px">
+              {address}
+            </Text.Truncated>
           </Stack>
         </Inline>
       </Box>
@@ -238,7 +240,11 @@ function TokenRow({
                   <Inline>
                     <Box paddingRight="16px" style={{ width: '160px' }}>
                       <Tooltip label={tokenAddress}>
-                        <Text.Truncated color="text/tertiary" size="11px">
+                        <Text.Truncated
+                          family="address"
+                          color="text/tertiary"
+                          size="11px"
+                        >
                           {tokenAddress}
                         </Text.Truncated>
                       </Tooltip>
@@ -254,7 +260,11 @@ function TokenRow({
                             borderColor="surface/invert@0.2"
                             padding="2px"
                           >
-                            <Text color="text/tertiary" size="9px">
+                            <Text
+                              family="numeric"
+                              color="text/tertiary"
+                              size="9px"
+                            >
                               {symbol}
                             </Text>
                           </Box>

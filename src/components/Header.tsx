@@ -2,6 +2,10 @@ import { type ReactNode, useLayoutEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { type Hex, formatGwei } from 'viem'
 
+import { GiMining } from 'react-icons/gi'
+import { MdHistory } from 'react-icons/md'
+
+import { Tooltip } from '~/components'
 import { DWLogo } from '~/components/svgs/DWLogo'
 import { useAppMeta } from '~/contexts'
 import {
@@ -27,7 +31,6 @@ import { useAccountStore, useNetworkStore, useSessionsStore } from '~/zustand'
 
 import { useRevert } from '../hooks/useRevert'
 import { useSnapshot } from '../hooks/useSnapshot'
-import * as styles from './Header.css'
 
 export function Header({ isNetworkOffline }: { isNetworkOffline?: boolean }) {
   const { type } = useAppMeta()
@@ -287,7 +290,10 @@ function Chain() {
   return (
     <HeaderItem label="Chain">
       <Text size="12px" wrap={false} width="full">
-        {network.chainId}: {network.name}
+        <Text as="span" family="numeric">
+          {network.chainId}
+        </Text>
+        : {network.name}
       </Text>
     </HeaderItem>
   )
@@ -343,12 +349,12 @@ function BlockNumber() {
       <Inline alignVertical="center" gap="4px" wrap={false}>
         <Box width="fit">
           <HeaderItem label="Block">
-            <Text size="12px" tabular>
+            <Text family="numeric" size="12px" tabular>
               {block?.number ? block?.number.toString() : ''}
             </Text>
           </HeaderItem>
         </Box>
-        <Inline wrap={false}>
+        <Inline gap="8px" wrap={false}>
           {block && <MineButton />}
           <RevertButton snapshot={snapshot} />
         </Inline>
@@ -388,7 +394,7 @@ function BaseFee() {
   if (!block) return null
   return (
     <HeaderItem label="Base Fee">
-      <Text size="12px">
+      <Text family="numeric" size="12px">
         {intl.format(Number(formatGwei(block.baseFeePerGas!)))}{' '}
         <Text color="text/tertiary">gwei</Text>
       </Text>
@@ -401,18 +407,24 @@ function MineButton() {
   const { mutateAsync: mine } = useMine()
 
   return (
-    <Box key={block?.number?.toString()} style={{ marginTop: '14px' }}>
-      <Button.Symbol
-        label="Mine Block"
-        height="20px"
-        onClick={(e) => {
-          e.preventDefault()
-          mine({ blocks: 1 })
-        }}
-        symbol="hammer.fill"
-        symbolProps={{ className: styles.mineSymbol }}
-        variant="ghost primary"
-      />
+    <Box
+      key={block?.number?.toString()}
+      style={{ marginTop: '14px', cursor: 'pointer' }}
+    >
+      <Tooltip label="Mine Block">
+        <Button.Root
+          aria-label="Mine Block"
+          height="20px"
+          onClick={(e) => {
+            e.preventDefault()
+            mine({ blocks: 1 })
+          }}
+          variant="ghost primary"
+          width="fit"
+        >
+          <GiMining size={18} />
+        </Button.Root>
+      </Tooltip>
     </Box>
   )
 }
@@ -421,18 +433,28 @@ function RevertButton({ snapshot }: { snapshot?: Hex }) {
   const { mutateAsync: revert } = useRevert()
 
   return (
-    <Box key={snapshot} style={{ marginTop: '14px' }}>
-      <Button.Symbol
-        disabled={!snapshot}
-        label="Revert Block"
-        height="20px"
-        onClick={(e) => {
-          e.preventDefault()
-          revert({ id: snapshot! })
-        }}
-        symbol="backward.fill"
-        variant="ghost primary"
-      />
+    <Box
+      key={snapshot}
+      style={{
+        marginTop: '14px',
+        cursor: snapshot ? 'pointer' : 'not-allowed',
+      }}
+    >
+      <Tooltip label="Revert Block">
+        <Button.Root
+          aria-label="Revert Block"
+          disabled={!snapshot}
+          height="20px"
+          onClick={(e) => {
+            e.preventDefault()
+            revert({ id: snapshot! })
+          }}
+          variant="ghost primary"
+          width="fit"
+        >
+          <MdHistory size={18} />
+        </Button.Root>
+      </Tooltip>
     </Box>
   )
 }

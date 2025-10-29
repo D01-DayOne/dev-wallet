@@ -16,7 +16,7 @@ export function TabsList({ items, onSelect }: TabsListProps) {
     <>
       <Tabs_.List asChild>
         <div>
-          <Inline gap="12px">
+          <Inline gap="8px">
             {items.map((item) => (
               <Tabs_.Trigger
                 asChild
@@ -30,9 +30,9 @@ export function TabsList({ items, onSelect }: TabsListProps) {
                   cursor="pointer"
                   display="flex"
                   onClick={() => onSelect?.(item)}
-                  style={{ height: '36px' }}
+                  style={{ height: '32px' }}
                 >
-                  <Text size="14px">{item.label}</Text>
+                  <Text size="11px">{item.label}</Text>
                 </Box>
               </Tabs_.Trigger>
             ))}

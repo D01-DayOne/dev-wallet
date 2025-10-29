@@ -8,8 +8,7 @@
       "contracts/cache",
       "contracts/out",
       "contracts/generated.ts",
-      "keys.json",
-      "symbols/generated"
+      "keys.json"
     ]
   },
   "formatter": {

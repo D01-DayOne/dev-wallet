@@ -101,7 +101,7 @@ export default function ContractDetails() {
           <Text size="12px">{contract?.name ?? 'Unnamed Contract'}</Text>
         </LabelledContent>
         <LabelledContent label="Contract Address">
-          <Text fontFamily="address" size="12px">
+          <Text family="address" size="12px">
             {contract?.address}
           </Text>
         </LabelledContent>

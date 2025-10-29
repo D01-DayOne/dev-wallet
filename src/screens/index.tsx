@@ -179,7 +179,7 @@ function AccountRow({ account }: { account: Account }) {
               <Box title={account.address}>
                 <Text
                   color={account.displayName ? 'text/tertiary' : undefined}
-                  fontFamily="address"
+                  family="address"
                   size="12px"
                 >
                   {truncatedAddress ?? account.address}
@@ -509,7 +509,9 @@ function Blocks() {
                   >
                     <Columns alignHorizontal="justify" gap="4px" width="full">
                       <Column width="1/4" alignVertical="center">
-                        <Text size="12px">{block.number!.toString()}</Text>
+                        <Text family="numeric" size="12px">
+                          {block.number!.toString()}
+                        </Text>
                       </Column>
                       <Column alignVertical="center">
                         {status === 'pending' ? (
@@ -525,7 +527,7 @@ function Blocks() {
                         )}
                       </Column>
                       <Column width="1/5" alignVertical="center">
-                        <Text size="12px">
+                        <Text family="numeric" size="12px">
                           {block.transactions.length || '0'}
                         </Text>
                       </Column>
@@ -804,7 +806,7 @@ function Transactions() {
                   >
                     <Columns gap="6px" alignVertical="center">
                       <Inline alignVertical="center" gap="4px" wrap={false}>
-                        <Text size="12px">
+                        <Text family="numeric" size="12px">
                           {transaction.blockNumber?.toString()}
                         </Text>
                         {status === 'pending' && (
@@ -818,7 +820,7 @@ function Transactions() {
                       </Inline>
                       <Column alignVertical="center">
                         <Box title={transaction.from}>
-                          <Text.Truncated fontFamily="address" size="12px">
+                          <Text.Truncated family="address" size="12px">
                             {transaction.from}
                           </Text.Truncated>
                         </Box>
@@ -826,7 +828,7 @@ function Transactions() {
                       <Column alignVertical="center">
                         {transaction.to ? (
                           <Box title={transaction.to}>
-                            <Text.Truncated fontFamily="address" size="12px">
+                            <Text.Truncated family="address" size="12px">
                               {transaction.to}
                             </Text.Truncated>
                           </Box>
@@ -839,6 +841,7 @@ function Transactions() {
                       <Column alignVertical="center">
                         <Text
                           align="right"
+                          family="numeric"
                           wrap={false}
                           size="12px"
                           width="full"
@@ -970,7 +973,7 @@ function Contracts() {
                               </Text>
                               <Text
                                 color="text/secondary"
-                                fontFamily="address"
+                                family="address"
                                 size="9px"
                                 wrap={false}
                               >
@@ -1104,50 +1107,88 @@ function ImportContract() {
     watchAddressOrBytecode,
   ])
 
-  const handleImportFoundry = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const foundryDirectoryInputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    const element = foundryDirectoryInputRef.current
+    if (!element) return
+    element.setAttribute('webkitdirectory', 'true')
+    element.setAttribute('directory', 'true')
+  }, [])
+
+  const handleImportFoundry = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    console.log('[Foundry Import] Starting import...')
     try {
       const files = e.target.files
-      if (!files || files.length === 0) return
+      const fileArray = files ? Array.from(files) : []
 
-      const { parseFoundryBroadcast, loadAbisFromFiles } = await import(
-        '~/utils/foundry'
-      )
+      console.log('[Foundry Import] Files selected:', fileArray.length)
 
-      // Find the broadcast file (run-latest.json)
-      const broadcastFile = Array.from(files).find(
-        (f) => f.name === 'run-latest.json',
-      )
-
-      if (!broadcastFile) {
-        toast.error(
-          'Please select broadcast/31337/run-latest.json from your Foundry project',
-        )
+      if (fileArray.length === 0) {
+        console.log('[Foundry Import] No files selected')
         return
       }
 
-      // Parse broadcast file to get contracts
-      const foundryContracts = await parseFoundryBroadcast(broadcastFile)
+      const describeFile = (file: File) => {
+        const directoryFile = file as File & { webkitRelativePath?: string }
+        if (
+          directoryFile.webkitRelativePath &&
+          directoryFile.webkitRelativePath !== ''
+        )
+          return directoryFile.webkitRelativePath
+        return file.name
+      }
 
-      // Get all JSON files that might be ABIs
-      const abiFiles = Array.from(files).filter(
-        (f) => f.name.endsWith('.json') && f !== broadcastFile,
+      console.log(
+        '[Foundry Import] File list:',
+        fileArray.map((file) => describeFile(file)),
       )
 
-      // Try to match and load ABIs
-      const contractsWithAbis = await loadAbisFromFiles(
-        foundryContracts,
-        abiFiles,
+      const { loadFoundryContractsFromDirectory } = await import(
+        '~/utils/foundry'
       )
 
-      // Add contracts to the list
-      for (const contract of contractsWithAbis) {
-        const isAlreadyImported = contracts?.some(
-          (c) =>
-            c.visible &&
-            c.address.toLowerCase() === contract.address.toLowerCase(),
+      console.log('[Foundry Import] Loading contracts from directory...')
+      const contractsFromDirectory =
+        await loadFoundryContractsFromDirectory(fileArray)
+      console.log('[Foundry Import] Found contracts:', contractsFromDirectory)
+
+      if (contractsFromDirectory.length === 0) {
+        toast.error('No deployed contracts found in selected directory')
+        return
+      }
+
+      let imported = 0
+      let updated = 0
+
+      for (const contract of contractsFromDirectory) {
+        const existing = contracts?.find(
+          (c) => c.address.toLowerCase() === contract.address.toLowerCase(),
         )
 
-        if (!isAlreadyImported) {
+        if (existing) {
+          console.log(
+            '[Foundry Import] Updating contract:',
+            contract.address,
+            '->',
+            contract.name,
+          )
+          updateContract({
+            address: existing.address,
+            name: contract.name ?? existing.name,
+            abi: contract.abi ?? existing.abi,
+            bytecode: contract.bytecode ?? existing.bytecode,
+            state: 'loaded',
+          })
+          updated++
+        } else {
+          console.log(
+            '[Foundry Import] Adding contract:',
+            contract.name,
+            contract.address,
+          )
           addContract({
             address: contract.address,
             name: contract.name,
@@ -1155,19 +1196,41 @@ function ImportContract() {
             bytecode: contract.bytecode,
             state: 'loaded',
           })
+          imported++
         }
       }
 
-      const withAbi = contractsWithAbis.filter((c) => c.abi).length
-      toast.success(
-        `Imported ${contractsWithAbis.length} contract${contractsWithAbis.length !== 1 ? 's' : ''}${withAbi > 0 ? ` (${withAbi} with ABIs)` : ''}`,
-      )
+      const withAbi = contractsFromDirectory.filter(
+        (contract) => contract.abi,
+      ).length
 
-      // Reset file input
+      console.log('[Foundry Import] Import complete:', {
+        imported,
+        updated,
+        withAbi,
+      })
+
+      const processedLabel = `Processed ${
+        contractsFromDirectory.length
+      } contract${contractsFromDirectory.length === 1 ? '' : 's'}`
+      const summaryLabel = [
+        `imported ${imported}`,
+        updated > 0 ? `updated ${updated}` : undefined,
+      ]
+        .filter(Boolean)
+        .join(', ')
+      const abiLabel = withAbi > 0 ? ` (${withAbi} with ABIs)` : ''
+
+      toast.success(`${processedLabel} — ${summaryLabel}${abiLabel}`)
+
       e.target.value = ''
     } catch (error) {
-      toast.error('Failed to import Foundry contracts. Check the console for details.')
-      console.error('Foundry import error:', error)
+      console.error('[Foundry Import] Error:', error)
+      toast.error(
+        `Import failed: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+      )
     }
   }
 
@@ -1200,9 +1263,9 @@ function ImportContract() {
       </Form.Root>
       <Box position="relative">
         <input
+          ref={foundryDirectoryInputRef}
           type="file"
           multiple
-          accept=".json"
           onChange={handleImportFoundry}
           style={{
             position: 'absolute',
@@ -1213,7 +1276,6 @@ function ImportContract() {
             opacity: 0,
             cursor: 'pointer',
           }}
-          {...({ webkitdirectory: '', directory: '' } as any)}
         />
         <Box style={{ pointerEvents: 'none' }}>
           <Button height="24px" variant="stroked fill" width="full">
