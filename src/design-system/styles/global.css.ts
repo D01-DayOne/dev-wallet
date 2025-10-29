@@ -30,6 +30,35 @@ Object.entries(fonts).forEach(([familyName, sets]) => {
   })
 })
 
+// Orbitron for addresses
+globalFontFace('Orbitron', {
+  src: "url('https://fonts.gstatic.com/s/orbitron/v31/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nyKS6xpmIyXjU1pg.woff2') format('woff2')",
+  fontWeight: 400,
+  fontStyle: 'normal',
+  fontDisplay: 'swap',
+})
+
+globalFontFace('Orbitron', {
+  src: "url('https://fonts.gstatic.com/s/orbitron/v31/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nyKy-xpmIyXjU1pg.woff2') format('woff2')",
+  fontWeight: 500,
+  fontStyle: 'normal',
+  fontDisplay: 'swap',
+})
+
+globalFontFace('Orbitron', {
+  src: "url('https://fonts.gstatic.com/s/orbitron/v31/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nyKzWxpmIyXjU1pg.woff2') format('woff2')",
+  fontWeight: 600,
+  fontStyle: 'normal',
+  fontDisplay: 'swap',
+})
+
+globalFontFace('Orbitron', {
+  src: "url('https://fonts.gstatic.com/s/orbitron/v31/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nyKxqxpmIyXjU1pg.woff2') format('woff2')",
+  fontWeight: 700,
+  fontStyle: 'normal',
+  fontDisplay: 'swap',
+})
+
 globalStyle('html, body', {
   backgroundColor: `rgb(${backgroundColorVars['surface/primary']})`,
   fontFamily: fontFamily.default,

@@ -179,6 +179,7 @@ function AccountRow({ account }: { account: Account }) {
               <Box title={account.address}>
                 <Text
                   color={account.displayName ? 'text/tertiary' : undefined}
+                  fontFamily="address"
                   size="12px"
                 >
                   {truncatedAddress ?? account.address}
@@ -817,7 +818,7 @@ function Transactions() {
                       </Inline>
                       <Column alignVertical="center">
                         <Box title={transaction.from}>
-                          <Text.Truncated size="12px">
+                          <Text.Truncated fontFamily="address" size="12px">
                             {transaction.from}
                           </Text.Truncated>
                         </Box>
@@ -825,7 +826,7 @@ function Transactions() {
                       <Column alignVertical="center">
                         {transaction.to ? (
                           <Box title={transaction.to}>
-                            <Text.Truncated size="12px">
+                            <Text.Truncated fontFamily="address" size="12px">
                               {transaction.to}
                             </Text.Truncated>
                           </Box>
@@ -871,7 +872,7 @@ function Contracts() {
   const VirtualList = useVirtualList({
     layout: useMemo(
       () => [
-        { size: 40, sticky: true, type: 'search' },
+        { size: 68, sticky: true, type: 'search' },
         { size: 24, sticky: true, type: 'header' },
         ...contracts.map(
           (_, index) =>
@@ -969,6 +970,7 @@ function Contracts() {
                               </Text>
                               <Text
                                 color="text/secondary"
+                                fontFamily="address"
                                 size="9px"
                                 wrap={false}
                               >
@@ -1102,31 +1104,123 @@ function ImportContract() {
     watchAddressOrBytecode,
   ])
 
+  const handleImportFoundry = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const files = e.target.files
+      if (!files || files.length === 0) return
+
+      const { parseFoundryBroadcast, loadAbisFromFiles } = await import(
+        '~/utils/foundry'
+      )
+
+      // Find the broadcast file (run-latest.json)
+      const broadcastFile = Array.from(files).find(
+        (f) => f.name === 'run-latest.json',
+      )
+
+      if (!broadcastFile) {
+        toast.error(
+          'Please select broadcast/31337/run-latest.json from your Foundry project',
+        )
+        return
+      }
+
+      // Parse broadcast file to get contracts
+      const foundryContracts = await parseFoundryBroadcast(broadcastFile)
+
+      // Get all JSON files that might be ABIs
+      const abiFiles = Array.from(files).filter(
+        (f) => f.name.endsWith('.json') && f !== broadcastFile,
+      )
+
+      // Try to match and load ABIs
+      const contractsWithAbis = await loadAbisFromFiles(
+        foundryContracts,
+        abiFiles,
+      )
+
+      // Add contracts to the list
+      for (const contract of contractsWithAbis) {
+        const isAlreadyImported = contracts?.some(
+          (c) =>
+            c.visible &&
+            c.address.toLowerCase() === contract.address.toLowerCase(),
+        )
+
+        if (!isAlreadyImported) {
+          addContract({
+            address: contract.address,
+            name: contract.name,
+            abi: contract.abi,
+            bytecode: contract.bytecode,
+            state: 'loaded',
+          })
+        }
+      }
+
+      const withAbi = contractsWithAbis.filter((c) => c.abi).length
+      toast.success(
+        `Imported ${contractsWithAbis.length} contract${contractsWithAbis.length !== 1 ? 's' : ''}${withAbi > 0 ? ` (${withAbi} with ABIs)` : ''}`,
+      )
+
+      // Reset file input
+      e.target.value = ''
+    } catch (error) {
+      toast.error('Failed to import Foundry contracts. Check the console for details.')
+      console.error('Foundry import error:', error)
+    }
+  }
+
   return (
-    <Form.Root onSubmit={submit} style={{ width: '100%' }}>
-      <Inline gap="4px" wrap={false}>
-        <Form.InputField
-          height="24px"
-          hideLabel
-          label="Import address"
-          placeholder="Import contract address or deploy bytecode..."
-          register={register('addressOrBytecode', {
-            pattern: /^0x[a-fA-F0-9]+$/,
-            required: true,
-          })}
-        />
-        {formState.isDirty && (
-          <Button
-            disabled={!formState.isValid}
+    <Stack gap="4px">
+      <Form.Root onSubmit={submit} style={{ width: '100%' }}>
+        <Inline gap="4px" wrap={false}>
+          <Form.InputField
             height="24px"
-            variant="stroked fill"
-            width="fit"
-            type="submit"
-          >
-            {submitText}
+            hideLabel
+            label="Import address"
+            placeholder="Import contract address or deploy bytecode..."
+            register={register('addressOrBytecode', {
+              pattern: /^0x[a-fA-F0-9]+$/,
+              required: true,
+            })}
+          />
+          {formState.isDirty && (
+            <Button
+              disabled={!formState.isValid}
+              height="24px"
+              variant="stroked fill"
+              width="fit"
+              type="submit"
+            >
+              {submitText}
+            </Button>
+          )}
+        </Inline>
+      </Form.Root>
+      <Box position="relative">
+        <input
+          type="file"
+          multiple
+          accept=".json"
+          onChange={handleImportFoundry}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            opacity: 0,
+            cursor: 'pointer',
+          }}
+          {...({ webkitdirectory: '', directory: '' } as any)}
+        />
+        <Box style={{ pointerEvents: 'none' }}>
+          <Button height="24px" variant="stroked fill" width="full">
+            Import from Foundry
           </Button>
-        )}
-      </Inline>
-    </Form.Root>
+        </Box>
+      </Box>
+    </Stack>
   )
 }

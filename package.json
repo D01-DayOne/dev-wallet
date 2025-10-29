@@ -4,7 +4,7 @@
   "private": true,
   "extension": {
     "name": "DW: DevWallet",
-    "description": "Developer Wallet & DevTools for Ethereum"
+    "description": "Dev Wallet for EVM & Forge"
   },
   "scripts": {
     "anvil": "anvil --fork-url https://cloudflare-eth.com",

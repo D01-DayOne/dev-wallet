@@ -101,19 +101,19 @@ export default function ContractDetails() {
           <Text size="12px">{contract?.name ?? 'Unnamed Contract'}</Text>
         </LabelledContent>
         <LabelledContent label="Contract Address">
-          <Text size="12px">{contract?.address}</Text>
+          <Text fontFamily="address" size="12px">
+            {contract?.address}
+          </Text>
         </LabelledContent>
-        {(isGuessedAbi || contract?.abi) && (
-          <UploadAbi
-            onUpload={({ abi, file }) =>
-              updateContract({
-                abi,
-                address: contract?.address!,
-                name: file.name.replace('.json', ''),
-              })
-            }
-          />
-        )}
+        <UploadAbi
+          onUpload={({ abi, file }) =>
+            updateContract({
+              abi,
+              address: contract?.address!,
+              name: file.name.replace('.json', ''),
+            })
+          }
+        />
         {isGuessedAbi && (
           <>
             <Box backgroundColor="surface/yellowTint" padding="8px">

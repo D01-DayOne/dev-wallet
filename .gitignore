@@ -31,3 +31,4 @@ test/contracts/cache
 test/contracts/out
 
 .idea/
+.claude/
