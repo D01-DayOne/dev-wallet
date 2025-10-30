@@ -1,7 +1,33 @@
-import type { ClassValue } from 'clsx'
 import { forwardRef } from 'react'
 
-import symbols from '../symbols/generated'
+import type { ClassValue } from 'clsx'
+import type { LucideIcon } from 'lucide-react'
+import {
+  ArrowLeft,
+  ArrowLeftRight,
+  ArrowRight,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronsRight,
+  ClipboardCopy,
+  Clock,
+  Cog,
+  Download,
+  Hammer,
+  Minus,
+  Plus,
+  RefreshCcw,
+  Settings,
+  SkipBack,
+  SquarePen,
+  Trash2,
+  Undo2,
+  UserCircle,
+  Wallet,
+  X,
+} from 'lucide-react'
+
 import type { FontSize, FontWeight, SymbolName } from '../tokens'
 import { Box } from './Box'
 import type { BoxStyles } from './Box.css'
@@ -12,6 +38,41 @@ export type SFSymbolProps = {
   weight?: FontWeight
   symbol: SymbolName
   size?: FontSize
+}
+
+const strokeWidthByWeight: Record<FontWeight, number> = {
+  light: 1,
+  regular: 1.25,
+  medium: 1.5,
+  semibold: 1.75,
+  bold: 2,
+  heavy: 2.25,
+}
+
+const symbolToIcon: Record<SymbolName, LucideIcon> = {
+  'arrow.clockwise': RefreshCcw,
+  'arrow.left.arrow.right': ArrowLeftRight,
+  checkmark: Check,
+  clock: Clock,
+  'doc.on.doc': ClipboardCopy,
+  'hammer.fill': Hammer,
+  'wallet.pass': Wallet,
+  'person.circle': UserCircle,
+  'chevron.down': ChevronDown,
+  'chevron.right.2': ChevronsRight,
+  'chevron.left': ChevronLeft,
+  trash: Trash2,
+  xmark: X,
+  'arrow.right': ArrowRight,
+  'arrowtriangle.left.and.line.vertical.and.arrowtriangle.right': SkipBack,
+  'square.and.arrow.down': Download,
+  'gearshape.fill': Settings,
+  'square.and.pencil': SquarePen,
+  plus: Plus,
+  gear: Cog,
+  minus: Minus,
+  'backward.fill': ArrowLeft,
+  'arrow.counterclockwise': Undo2,
 }
 
 export const SFSymbol = forwardRef<SVGSVGElement, SFSymbolProps>(
@@ -25,23 +86,24 @@ export const SFSymbol = forwardRef<SVGSVGElement, SFSymbolProps>(
     }: SFSymbolProps,
     ref,
   ) => {
-    const symbol = symbols[name as keyof typeof symbols][weight]
+    const Icon = symbolToIcon[name]
+    if (!Icon) return null
+
     return (
       <Box
         ref={ref}
-        as="svg"
+        as={Icon}
         className={className}
-        viewBox={`0 0 ${symbol.viewBox.width} ${symbol.viewBox.height}`}
-        fill="none"
         color={color}
         style={{
           width: size,
           height: size,
         }}
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path d={symbol.path} fill="currentColor" />
-      </Box>
+        size={size}
+        strokeWidth={strokeWidthByWeight[weight]}
+        aria-hidden
+        focusable={false}
+      />
     )
   },
 )

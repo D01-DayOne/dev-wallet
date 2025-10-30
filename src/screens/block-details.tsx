@@ -44,7 +44,9 @@ export default function BlockDetails() {
           <Columns gap="8px">
             <Column width="1/4">
               <LabelledContent label="Block">
-                <Text size="12px">{blockNumber}</Text>
+                <Text family="numeric" size="12px">
+                  {blockNumber}
+                </Text>
               </LabelledContent>
             </Column>
             <LabelledContent label="Timestamp">
@@ -53,14 +55,16 @@ export default function BlockDetails() {
                   Pending
                 </Text>
               ) : (
-                <Text size="12px">
+                <Text family="numeric" size="12px">
                   {new Date(Number(block.timestamp! * 1000n)).toLocaleString()}
                 </Text>
               )}
             </LabelledContent>
             <Column width="1/4">
               <LabelledContent label="Transactions">
-                <Text size="12px">{block.transactions.length || '0'}</Text>
+                <Text family="numeric" size="12px">
+                  {block.transactions.length || '0'}
+                </Text>
               </LabelledContent>
             </Column>
           </Columns>
@@ -69,24 +73,28 @@ export default function BlockDetails() {
               <Column width="1/4">
                 <LabelledContent label="Hash">
                   <Tooltip label={block.hash}>
-                    <Text.Truncated size="12px">{block.hash}</Text.Truncated>
+                    <Text.Truncated family="address" size="12px">
+                      {block.hash}
+                    </Text.Truncated>
                   </Tooltip>
                 </LabelledContent>
               </Column>
             )}
             <Column width="1/4">
               <LabelledContent label="Base Fee">
-                <Text size="12px">
+                <Text family="numeric" size="12px">
                   {numberIntl6SigFigs.format(
                     Number(formatGwei(block.baseFeePerGas!)),
                   )}{' '}
-                  <Text color="text/tertiary">gwei</Text>
+                  <Text family="numeric" color="text/tertiary">
+                    gwei
+                  </Text>
                 </Text>
               </LabelledContent>
             </Column>
             <Column>
               <LabelledContent label="Gas Used/Limit">
-                <Text size="12px" wrap={false}>
+                <Text family="numeric" size="12px" wrap={false}>
                   {numberIntl.format(Number(block.gasUsed?.toString()))} /{' '}
                   {numberIntl.format(Number(block.gasLimit?.toString()))} (
                   {Math.round(
@@ -101,13 +109,15 @@ export default function BlockDetails() {
             <Column width="1/4">
               <LabelledContent label="Fee Recipient">
                 <Tooltip label={block.miner}>
-                  <Text.Truncated size="12px">{block.miner}</Text.Truncated>
+                  <Text.Truncated family="address" size="12px">
+                    {block.miner}
+                  </Text.Truncated>
                 </Tooltip>
               </LabelledContent>
             </Column>
             <Column width="3/4">
               <LabelledContent label="Total Difficulty">
-                <Text size="12px">
+                <Text family="numeric" size="12px">
                   {numberIntl.format(Number(block.totalDifficulty?.toString()))}
                 </Text>
               </LabelledContent>
@@ -116,14 +126,16 @@ export default function BlockDetails() {
           <Columns gap="8px">
             <Column width="1/4">
               <LabelledContent label="Size">
-                <Text size="12px">
+                <Text family="numeric" size="12px">
                   {numberIntl.format(Number(block.size.toString()))} bytes
                 </Text>
               </LabelledContent>
             </Column>
             <LabelledContent label="Logs Bloom">
               <Tooltip label={block.logsBloom!}>
-                <Text.Truncated size="12px">{block.logsBloom!}</Text.Truncated>
+                <Text.Truncated family="address" size="12px">
+                  {block.logsBloom!}
+                </Text.Truncated>
               </Tooltip>
             </LabelledContent>
           </Columns>
@@ -156,7 +168,10 @@ export default function BlockDetails() {
                                     label={transaction.hash}
                                     width="full"
                                   >
-                                    <Text.Truncated size="12px">
+                                    <Text.Truncated
+                                      family="address"
+                                      size="12px"
+                                    >
                                       {transaction.hash}
                                     </Text.Truncated>
                                   </Tooltip>
@@ -164,24 +179,26 @@ export default function BlockDetails() {
                               </LabelledContent>
                               <LabelledContent label="From">
                                 <Tooltip label={transaction.from} width="full">
-                                  <Text.Truncated size="12px">
+                                  <Text.Truncated family="address" size="12px">
                                     {transaction.from}
                                   </Text.Truncated>
                                 </Tooltip>
                               </LabelledContent>
                               <LabelledContent label="To">
                                 <Tooltip label={transaction.to} width="full">
-                                  <Text.Truncated size="12px">
+                                  <Text.Truncated family="address" size="12px">
                                     {transaction.to}
                                   </Text.Truncated>
                                 </Tooltip>
                               </LabelledContent>
                               <LabelledContent label="Value">
-                                <Text wrap={false} size="12px">
+                                <Text family="numeric" wrap={false} size="12px">
                                   {numberIntl4SigFigs.format(
                                     Number(formatEther(transaction.value!)),
                                   )}{' '}
-                                  <Text color="text/tertiary">ETH</Text>
+                                  <Text family="numeric" color="text/tertiary">
+                                    ETH
+                                  </Text>
                                 </Text>
                               </LabelledContent>
                             </Columns>

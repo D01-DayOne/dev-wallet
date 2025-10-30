@@ -179,6 +179,7 @@ function AccountRow({ account }: { account: Account }) {
               <Box title={account.address}>
                 <Text
                   color={account.displayName ? 'text/tertiary' : undefined}
+                  family="address"
                   size="12px"
                 >
                   {truncatedAddress ?? account.address}
@@ -508,7 +509,9 @@ function Blocks() {
                   >
                     <Columns alignHorizontal="justify" gap="4px" width="full">
                       <Column width="1/4" alignVertical="center">
-                        <Text size="12px">{block.number!.toString()}</Text>
+                        <Text family="numeric" size="12px">
+                          {block.number!.toString()}
+                        </Text>
                       </Column>
                       <Column alignVertical="center">
                         {status === 'pending' ? (
@@ -524,7 +527,7 @@ function Blocks() {
                         )}
                       </Column>
                       <Column width="1/5" alignVertical="center">
-                        <Text size="12px">
+                        <Text family="numeric" size="12px">
                           {block.transactions.length || '0'}
                         </Text>
                       </Column>
@@ -803,7 +806,7 @@ function Transactions() {
                   >
                     <Columns gap="6px" alignVertical="center">
                       <Inline alignVertical="center" gap="4px" wrap={false}>
-                        <Text size="12px">
+                        <Text family="numeric" size="12px">
                           {transaction.blockNumber?.toString()}
                         </Text>
                         {status === 'pending' && (
@@ -817,7 +820,7 @@ function Transactions() {
                       </Inline>
                       <Column alignVertical="center">
                         <Box title={transaction.from}>
-                          <Text.Truncated size="12px">
+                          <Text.Truncated family="address" size="12px">
                             {transaction.from}
                           </Text.Truncated>
                         </Box>
@@ -825,7 +828,7 @@ function Transactions() {
                       <Column alignVertical="center">
                         {transaction.to ? (
                           <Box title={transaction.to}>
-                            <Text.Truncated size="12px">
+                            <Text.Truncated family="address" size="12px">
                               {transaction.to}
                             </Text.Truncated>
                           </Box>
@@ -838,6 +841,7 @@ function Transactions() {
                       <Column alignVertical="center">
                         <Text
                           align="right"
+                          family="numeric"
                           wrap={false}
                           size="12px"
                           width="full"
@@ -871,7 +875,7 @@ function Contracts() {
   const VirtualList = useVirtualList({
     layout: useMemo(
       () => [
-        { size: 40, sticky: true, type: 'search' },
+        { size: 68, sticky: true, type: 'search' },
         { size: 24, sticky: true, type: 'header' },
         ...contracts.map(
           (_, index) =>
@@ -969,6 +973,7 @@ function Contracts() {
                               </Text>
                               <Text
                                 color="text/secondary"
+                                family="address"
                                 size="9px"
                                 wrap={false}
                               >
@@ -1102,31 +1107,182 @@ function ImportContract() {
     watchAddressOrBytecode,
   ])
 
+  const foundryDirectoryInputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    const element = foundryDirectoryInputRef.current
+    if (!element) return
+    element.setAttribute('webkitdirectory', 'true')
+    element.setAttribute('directory', 'true')
+  }, [])
+
+  const handleImportFoundry = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    console.log('[Foundry Import] Starting import...')
+    try {
+      const files = e.target.files
+      const fileArray = files ? Array.from(files) : []
+
+      console.log('[Foundry Import] Files selected:', fileArray.length)
+
+      if (fileArray.length === 0) {
+        console.log('[Foundry Import] No files selected')
+        return
+      }
+
+      const describeFile = (file: File) => {
+        const directoryFile = file as File & { webkitRelativePath?: string }
+        if (
+          directoryFile.webkitRelativePath &&
+          directoryFile.webkitRelativePath !== ''
+        )
+          return directoryFile.webkitRelativePath
+        return file.name
+      }
+
+      console.log(
+        '[Foundry Import] File list:',
+        fileArray.map((file) => describeFile(file)),
+      )
+
+      const { loadFoundryContractsFromDirectory } = await import(
+        '~/utils/foundry'
+      )
+
+      console.log('[Foundry Import] Loading contracts from directory...')
+      const contractsFromDirectory =
+        await loadFoundryContractsFromDirectory(fileArray)
+      console.log('[Foundry Import] Found contracts:', contractsFromDirectory)
+
+      if (contractsFromDirectory.length === 0) {
+        toast.error('No deployed contracts found in selected directory')
+        return
+      }
+
+      let imported = 0
+      let updated = 0
+
+      for (const contract of contractsFromDirectory) {
+        const existing = contracts?.find(
+          (c) => c.address.toLowerCase() === contract.address.toLowerCase(),
+        )
+
+        if (existing) {
+          console.log(
+            '[Foundry Import] Updating contract:',
+            contract.address,
+            '->',
+            contract.name,
+          )
+          updateContract({
+            address: existing.address,
+            name: contract.name ?? existing.name,
+            abi: contract.abi ?? existing.abi,
+            bytecode: contract.bytecode ?? existing.bytecode,
+            state: 'loaded',
+          })
+          updated++
+        } else {
+          console.log(
+            '[Foundry Import] Adding contract:',
+            contract.name,
+            contract.address,
+          )
+          addContract({
+            address: contract.address,
+            name: contract.name,
+            abi: contract.abi,
+            bytecode: contract.bytecode,
+            state: 'loaded',
+          })
+          imported++
+        }
+      }
+
+      const withAbi = contractsFromDirectory.filter(
+        (contract) => contract.abi,
+      ).length
+
+      console.log('[Foundry Import] Import complete:', {
+        imported,
+        updated,
+        withAbi,
+      })
+
+      const processedLabel = `Processed ${
+        contractsFromDirectory.length
+      } contract${contractsFromDirectory.length === 1 ? '' : 's'}`
+      const summaryLabel = [
+        `imported ${imported}`,
+        updated > 0 ? `updated ${updated}` : undefined,
+      ]
+        .filter(Boolean)
+        .join(', ')
+      const abiLabel = withAbi > 0 ? ` (${withAbi} with ABIs)` : ''
+
+      toast.success(`${processedLabel} — ${summaryLabel}${abiLabel}`)
+
+      e.target.value = ''
+    } catch (error) {
+      console.error('[Foundry Import] Error:', error)
+      toast.error(
+        `Import failed: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+      )
+    }
+  }
+
   return (
-    <Form.Root onSubmit={submit} style={{ width: '100%' }}>
-      <Inline gap="4px" wrap={false}>
-        <Form.InputField
-          height="24px"
-          hideLabel
-          label="Import address"
-          placeholder="Import contract address or deploy bytecode..."
-          register={register('addressOrBytecode', {
-            pattern: /^0x[a-fA-F0-9]+$/,
-            required: true,
-          })}
-        />
-        {formState.isDirty && (
-          <Button
-            disabled={!formState.isValid}
+    <Stack gap="4px">
+      <Form.Root onSubmit={submit} style={{ width: '100%' }}>
+        <Inline gap="4px" wrap={false}>
+          <Form.InputField
             height="24px"
-            variant="stroked fill"
-            width="fit"
-            type="submit"
-          >
-            {submitText}
+            hideLabel
+            label="Import address"
+            placeholder="Import contract address or deploy bytecode..."
+            register={register('addressOrBytecode', {
+              pattern: /^0x[a-fA-F0-9]+$/,
+              required: true,
+            })}
+          />
+          {formState.isDirty && (
+            <Button
+              disabled={!formState.isValid}
+              height="24px"
+              variant="stroked fill"
+              width="fit"
+              type="submit"
+            >
+              {submitText}
+            </Button>
+          )}
+        </Inline>
+      </Form.Root>
+      <Box position="relative" style={{ display: 'none' }}>
+        <input
+          ref={foundryDirectoryInputRef}
+          type="file"
+          multiple
+          onChange={handleImportFoundry}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            opacity: 0,
+            cursor: 'pointer',
+          }}
+        />
+        <Box style={{ pointerEvents: 'none' }}>
+          <Button height="24px" variant="stroked fill" width="full">
+            Import from Foundry
           </Button>
-        )}
-      </Inline>
-    </Form.Root>
+        </Box>
+      </Box>
+    </Stack>
   )
 }

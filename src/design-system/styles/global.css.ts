@@ -1,38 +1,24 @@
-import { globalFontFace, globalStyle } from '@vanilla-extract/css'
+import '@fontsource/inter/300.css'
+import '@fontsource/inter/400.css'
+import '@fontsource/inter/500.css'
+import '@fontsource/inter/600.css'
+import '@fontsource/inter/700.css'
+import '@fontsource/inter/800.css'
+import '@fontsource/jetbrains-mono/400.css'
+import '@fontsource/jetbrains-mono/500.css'
+import '@fontsource/jetbrains-mono/600.css'
+import '@fontsource/orbitron/400.css'
+import '@fontsource/orbitron/500.css'
+import '@fontsource/orbitron/600.css'
+import '@fontsource/orbitron/700.css'
+import { globalStyle } from '@vanilla-extract/css'
 
 import { fontFamily } from '../tokens'
 import { backgroundColorVars } from './theme.css'
 
-const fonts = {
-  SFPro: [
-    ['SFPro-Light', 300],
-    ['SFPro-Regular', 400],
-    ['SFPro-Medium', 500],
-    ['SFPro-Semibold', 600],
-    ['SFPro-Bold', 700],
-    ['SFPro-Heavy', 800],
-  ],
-  SFMono: [
-    ['SFMono-Regular', 400],
-    ['SFMono-Medium', 500],
-    ['SFMono-Semibold', 600],
-  ],
-}
-
-Object.entries(fonts).forEach(([familyName, sets]) => {
-  sets.forEach(([name, fontWeight]) => {
-    globalFontFace(familyName, {
-      src: `url('/fonts/${name}.woff2') format('woff2')`,
-      fontWeight,
-      fontStyle: 'normal',
-      fontDisplay: 'auto',
-    })
-  })
-})
-
 globalStyle('html, body', {
   backgroundColor: `rgb(${backgroundColorVars['surface/primary']})`,
-  fontFamily: fontFamily.default,
+  fontFamily: fontFamily.address,
   fontFeatureSettings: '"rlig" 1, "calt" 1',
   fontSize: '16px',
   margin: 0,
