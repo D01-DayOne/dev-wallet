@@ -2,8 +2,7 @@ import { type ReactNode, useLayoutEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { type Hex, formatGwei } from 'viem'
 
-import { GiMining } from 'react-icons/gi'
-import { MdHistory } from 'react-icons/md'
+import { History, Pickaxe } from 'lucide-react'
 
 import { Tooltip } from '~/components'
 import { DWLogo } from '~/components/svgs/DWLogo'
@@ -422,7 +421,7 @@ function MineButton() {
           variant="ghost primary"
           width="fit"
         >
-          <GiMining size={18} />
+          <Pickaxe size={18} />
         </Button.Root>
       </Tooltip>
     </Box>
@@ -452,7 +451,7 @@ function RevertButton({ snapshot }: { snapshot?: Hex }) {
           variant="ghost primary"
           width="fit"
         >
-          <MdHistory size={18} />
+          <History size={18} />
         </Button.Root>
       </Tooltip>
     </Box>
