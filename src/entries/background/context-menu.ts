@@ -1,6 +1,4 @@
-function createContextMenuItem(
-  item: chrome.contextMenus.CreateProperties,
-) {
+function createContextMenuItem(item: chrome.contextMenus.CreateProperties) {
   chrome.contextMenus.create(item, () => {
     const error = chrome.runtime?.lastError
     if (error) console.warn('Context menu creation failed', error)

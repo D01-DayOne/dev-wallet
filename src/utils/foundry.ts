@@ -210,7 +210,9 @@ export async function loadFoundryContractsFromDirectory(
       const broadcastFile = broadcastFiles[i]
       try {
         console.log(
-          `[Foundry] Processing broadcast file ${i + 1}/${broadcastFiles.length}:`,
+          `[Foundry] Processing broadcast file ${i + 1}/${
+            broadcastFiles.length
+          }:`,
           getRelativePath(broadcastFile),
         )
 
@@ -270,7 +272,9 @@ export async function loadFoundryContractsFromDirectory(
     for (let i = 0; i < contracts.length; i += MAX_CONCURRENT_ABI_LOADS) {
       const batch = contracts.slice(i, i + MAX_CONCURRENT_ABI_LOADS)
       console.log(
-        `[Foundry] Processing batch ${Math.floor(i / MAX_CONCURRENT_ABI_LOADS) + 1}/${Math.ceil(contracts.length / MAX_CONCURRENT_ABI_LOADS)}`,
+        `[Foundry] Processing batch ${
+          Math.floor(i / MAX_CONCURRENT_ABI_LOADS) + 1
+        }/${Math.ceil(contracts.length / MAX_CONCURRENT_ABI_LOADS)}`,
       )
 
       const batchResults = await Promise.all(
@@ -278,10 +282,7 @@ export async function loadFoundryContractsFromDirectory(
           const artifactFile = findArtifactFile(relevantFiles, contract.name)
 
           if (!artifactFile) {
-            console.warn(
-              '[Foundry] No artifact file found for:',
-              contract.name,
-            )
+            console.warn('[Foundry] No artifact file found for:', contract.name)
             return contract
           }
 
