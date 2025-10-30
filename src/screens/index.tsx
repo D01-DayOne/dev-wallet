@@ -1261,7 +1261,7 @@ function ImportContract() {
           )}
         </Inline>
       </Form.Root>
-      <Box position="relative">
+      <Box position="relative" style={{ display: 'none' }}>
         <input
           ref={foundryDirectoryInputRef}
           type="file"

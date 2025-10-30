@@ -1,4 +1,19 @@
-export function setupContextMenu() {
+function createContextMenuItem(
+  item: chrome.contextMenus.CreateProperties,
+) {
+  chrome.contextMenus.create(item, () => {
+    const error = chrome.runtime?.lastError
+    if (error) console.warn('Context menu creation failed', error)
+  })
+}
+
+export async function setupContextMenu() {
+  try {
+    await chrome.contextMenus.removeAll()
+  } catch (error) {
+    console.warn('Failed to clear context menus', error)
+  }
+
   chrome.sidePanel
     .setPanelBehavior({ openPanelOnActionClick: true })
     .catch((error) => console.error(error))
@@ -10,7 +25,7 @@ export function setupContextMenu() {
   //   contexts: ['selection'],
   // })
 
-  chrome.contextMenus.create({
+  createContextMenuItem({
     id: 'open-wallet-tab',
     title: 'Open Wallet in a New Tab',
     type: 'normal',
@@ -18,19 +33,19 @@ export function setupContextMenu() {
   })
 
   if (process.env.NODE_ENV === 'development') {
-    chrome.contextMenus.create({
+    createContextMenuItem({
       id: 'open-design-system',
       title: 'Open Design System',
       type: 'normal',
       contexts: ['action'],
     })
-    chrome.contextMenus.create({
+    createContextMenuItem({
       id: 'open-components',
       title: 'Open Component Playground',
       type: 'normal',
       contexts: ['action'],
     })
-    chrome.contextMenus.create({
+    createContextMenuItem({
       id: 'open-test-dapp',
       title: 'Open Test Dapp',
       type: 'normal',

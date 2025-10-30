@@ -134,8 +134,9 @@ function extractBytecode(artifact: FoundryArtifact) {
   return normalize(artifact.deployedBytecode) ?? normalize(artifact.bytecode)
 }
 
-const MAX_FILES = 10000 // Prevent memory issues with huge directories
-const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB max per file
+const MAX_FILES = 1000 // Prevent memory issues with huge directories
+const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB max per file
+const MAX_CONCURRENT_ABI_LOADS = 1 // Process files one at a time to prevent crashes
 
 export async function loadFoundryContractsFromDirectory(
   inputFiles: FileList | File[],
@@ -147,13 +148,24 @@ export async function loadFoundryContractsFromDirectory(
       throw new Error('No files selected')
     }
 
+    console.log('[Foundry] File count:', inputFiles.length)
+
     if (inputFiles.length > MAX_FILES) {
       throw new Error(
-        `Too many files selected (${inputFiles.length}). Maximum is ${MAX_FILES}. Try selecting only the 'broadcast' and 'out' folders.`,
+        `Too many files selected (${inputFiles.length}). Maximum is ${MAX_FILES}. Try selecting a smaller directory or only the 'broadcast' and 'out' folders.`,
       )
     }
 
-    const files = Array.from(inputFiles as unknown as DirectoryFile[])
+    // Convert to array in chunks to avoid memory issues
+    const files: DirectoryFile[] = []
+    console.log('[Foundry] Converting file list...')
+    for (let i = 0; i < inputFiles.length; i++) {
+      files.push(inputFiles[i] as DirectoryFile)
+      // Log progress for large file sets
+      if (i > 0 && i % 100 === 0) {
+        console.log(`[Foundry] Processed ${i}/${inputFiles.length} files...`)
+      }
+    }
     console.log('[Foundry] Total files in selection:', files.length)
 
     // Filter to only relevant files first to reduce memory usage
@@ -183,7 +195,10 @@ export async function loadFoundryContractsFromDirectory(
       const samplePaths = relevantFiles
         .slice(0, 20)
         .map((f) => getRelativePath(f))
-      console.error('[Foundry] No broadcast files found. Sample paths:', samplePaths)
+      console.error(
+        '[Foundry] No broadcast files found. Sample paths:',
+        samplePaths,
+      )
       throw new Error(
         'Could not find broadcast/31337/run-latest.json in the selected files. Make sure you selected a Foundry project directory containing the broadcast folder.',
       )
@@ -191,10 +206,11 @@ export async function loadFoundryContractsFromDirectory(
 
     const contractsByAddress = new Map<string, FoundryDeployedContract>()
 
-    for (const broadcastFile of broadcastFiles) {
+    for (let i = 0; i < broadcastFiles.length; i++) {
+      const broadcastFile = broadcastFiles[i]
       try {
         console.log(
-          '[Foundry] Processing broadcast file:',
+          `[Foundry] Processing broadcast file ${i + 1}/${broadcastFiles.length}:`,
           getRelativePath(broadcastFile),
         )
 
@@ -220,6 +236,11 @@ export async function loadFoundryContractsFromDirectory(
             )
           }
         })
+
+        // Delay between broadcast files to allow garbage collection
+        if (i < broadcastFiles.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, 300))
+        }
       } catch (error) {
         console.error(
           '[Foundry] Error processing broadcast file:',
@@ -242,73 +263,94 @@ export async function loadFoundryContractsFromDirectory(
       'contracts...',
     )
 
-    const enrichedContracts = await Promise.all(
-      Array.from(contractsByAddress.values()).map(async (contract) => {
-        const artifactFile = findArtifactFile(relevantFiles, contract.name)
+    // Process ABIs in batches to avoid memory issues
+    const contracts = Array.from(contractsByAddress.values())
+    const enrichedContracts: FoundryDeployedContract[] = []
 
-        if (!artifactFile) {
-          console.warn('[Foundry] No artifact file found for:', contract.name)
-          return contract
-        }
+    for (let i = 0; i < contracts.length; i += MAX_CONCURRENT_ABI_LOADS) {
+      const batch = contracts.slice(i, i + MAX_CONCURRENT_ABI_LOADS)
+      console.log(
+        `[Foundry] Processing batch ${Math.floor(i / MAX_CONCURRENT_ABI_LOADS) + 1}/${Math.ceil(contracts.length / MAX_CONCURRENT_ABI_LOADS)}`,
+      )
 
-        try {
-          // Check file size before processing
-          if (artifactFile.size > MAX_FILE_SIZE) {
+      const batchResults = await Promise.all(
+        batch.map(async (contract) => {
+          const artifactFile = findArtifactFile(relevantFiles, contract.name)
+
+          if (!artifactFile) {
             console.warn(
-              '[Foundry] Skipping large artifact file for:',
+              '[Foundry] No artifact file found for:',
               contract.name,
-              `(${Math.round(artifactFile.size / 1024 / 1024)}MB)`,
             )
             return contract
           }
 
-          console.log(
-            '[Foundry] Loading artifact for:',
-            contract.name,
-            'from',
-            getRelativePath(artifactFile),
-          )
-          const artifactContent = await artifactFile.text()
-
-          let artifact: FoundryArtifact
           try {
-            artifact = JSON.parse(artifactContent) as FoundryArtifact
-          } catch (parseError) {
-            console.error(
-              '[Foundry] JSON parse error for artifact:',
+            // Check file size before processing
+            if (artifactFile.size > MAX_FILE_SIZE) {
+              console.warn(
+                '[Foundry] Skipping large artifact file for:',
+                contract.name,
+                `(${Math.round(artifactFile.size / 1024 / 1024)}MB)`,
+              )
+              return contract
+            }
+
+            console.log(
+              '[Foundry] Loading artifact for:',
               contract.name,
-              parseError,
+              'from',
+              getRelativePath(artifactFile),
             )
-            return contract // Return without ABI if artifact is invalid
+            const artifactContent = await artifactFile.text()
+
+            let artifact: FoundryArtifact
+            try {
+              artifact = JSON.parse(artifactContent) as FoundryArtifact
+            } catch (parseError) {
+              console.error(
+                '[Foundry] JSON parse error for artifact:',
+                contract.name,
+                parseError,
+              )
+              return contract // Return without ABI if artifact is invalid
+            }
+
+            const enriched = {
+              ...contract,
+              abi: artifact.abi ?? contract.abi,
+              bytecode: contract.bytecode ?? extractBytecode(artifact),
+            }
+
+            console.log(
+              '[Foundry] Successfully loaded artifact for:',
+              contract.name,
+              {
+                hasAbi: !!enriched.abi,
+                hasBytecode: !!enriched.bytecode,
+              },
+            )
+
+            return enriched
+          } catch (error) {
+            console.error(
+              '[Foundry] Failed to load artifact for',
+              contract.name,
+              ':',
+              error,
+            )
+            return contract // Return without ABI if loading fails
           }
+        }),
+      )
 
-          const enriched = {
-            ...contract,
-            abi: artifact.abi ?? contract.abi,
-            bytecode: contract.bytecode ?? extractBytecode(artifact),
-          }
+      enrichedContracts.push(...batchResults)
 
-          console.log(
-            '[Foundry] Successfully loaded artifact for:',
-            contract.name,
-            {
-              hasAbi: !!enriched.abi,
-              hasBytecode: !!enriched.bytecode,
-            },
-          )
-
-          return enriched
-        } catch (error) {
-          console.error(
-            '[Foundry] Failed to load artifact for',
-            contract.name,
-            ':',
-            error,
-          )
-          return contract // Return without ABI if loading fails
-        }
-      }),
-    )
+      // Delay between batches to allow garbage collection
+      if (i + MAX_CONCURRENT_ABI_LOADS < contracts.length) {
+        await new Promise((resolve) => setTimeout(resolve, 500))
+      }
+    }
 
     const withAbi = enrichedContracts.filter((c) => c.abi).length
     console.log('[Foundry] Import complete:', {

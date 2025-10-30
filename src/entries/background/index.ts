@@ -17,7 +17,7 @@ contentMessenger.reply('ping', async () => 'pong')
 
 handleCommands()
 interceptJsonRpcRequests()
-setupContextMenu()
+void setupContextMenu()
 setupExtensionId()
 setupInpage()
 setupRpcHandler({ messenger: inpageMessenger })
