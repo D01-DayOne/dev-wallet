@@ -162,22 +162,25 @@ function AccountRow({ account }: { account: Account }) {
               />
             )}
             {!active && (
-              <Button
-                type="button"
-                onClick={() => setAccount({ account, setActive: true })}
-                variant={active ? 'solid invert' : 'stroked fill'}
-              >
-                ⇄
-              </Button>
+              <Button.Symbol
+                label="Select Account"
+                symbol="wallet.pass"
+                height="24px"
+                variant="stroked fill"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setAccount({ account, setActive: true })
+                }}
+              />
             )}
             <Link to={`account/${account.address}`}>
-              <Button
-                type="button"
+              <Button.Symbol
+                label="View Details"
+                symbol="arrow.right"
+                height="24px"
                 variant={active ? 'solid invert' : 'stroked fill'}
                 onClick={() => {}}
-              >
-                →
-              </Button>
+              />
             </Link>
           </Inline>
         </Box>
@@ -799,7 +802,7 @@ function Transactions() {
                   <Box
                     backgroundColor={{ hover: 'surface/fill/quarternary' }}
                     paddingHorizontal="8px"
-                    paddingVertical="8px"
+                    paddingVertical="12px"
                     height="full"
                   >
                     <Columns gap="6px" alignVertical="center">
@@ -953,7 +956,7 @@ function Contracts() {
                   <Box
                     backgroundColor={{ hover: 'surface/fill/quarternary' }}
                     paddingHorizontal="8px"
-                    paddingVertical="8px"
+                    paddingVertical="12px"
                     style={{ minHeight: '40px' }}
                   >
                     <Columns

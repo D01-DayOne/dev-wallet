@@ -1,14 +1,6 @@
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router'
-import {
-  Box,
-  Button,
-  Inset,
-  Row,
-  Rows,
-  Separator,
-  Text,
-} from '~/design-system'
+import { Box, Button, Inset, Row, Rows, Separator, Text } from '~/design-system'
 import type { RowProps } from '~/design-system/components/Rows'
 
 export function Container({

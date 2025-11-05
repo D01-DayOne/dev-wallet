@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Container } from '~/components'
-import { Box, Button, Inline, Inset, Stack, Text } from '~/design-system'
+import { Box, Button, Inline, Inset, Stack, Text, Toggle } from '~/design-system'
 import { getTheme, setTheme } from '~/design-system/utils/theme'
 import { useSettingsStore } from '~/zustand'
 
@@ -19,10 +19,9 @@ export default function Settings() {
     return storageTheme || systemTheme || 'light'
   })
 
-  const handleToggleTheme = () => {
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark'
-    setTheme(newTheme)
-    setCurrentTheme(newTheme)
+  const handleSetTheme = (theme: 'light' | 'dark') => {
+    setTheme(theme)
+    setCurrentTheme(theme)
   }
 
   return (
@@ -30,78 +29,54 @@ export default function Settings() {
       <Stack gap="16px">
         <Text color="text/tertiary">Appearance</Text>
         <Inset right="4px">
-          <Inline alignVertical="center" alignHorizontal="justify" wrap={false}>
-            <Box width="full">
-              <Text size="12px">Theme</Text>
-            </Box>
-            <Button
-              height="24px"
-              onClick={handleToggleTheme}
-              variant="stroked fill"
-              width="fit"
-            >
-              {currentTheme === 'dark' ? 'Dark' : 'Light'}
-            </Button>
-          </Inline>
+          <Stack gap="4px">
+            <Text size="12px">Theme</Text>
+            <Inline gap="0px" wrap={false}>
+              <Box style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0, overflow: 'hidden' }}>
+                <Button
+                  height="24px"
+                  onClick={() => handleSetTheme('light')}
+                  variant={currentTheme === 'light' ? 'solid invert' : 'stroked fill'}
+                  width="fit"
+                >
+                  <Box paddingHorizontal="12px">Light</Box>
+                </Button>
+              </Box>
+              <Box style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, marginLeft: '-1px', overflow: 'hidden' }}>
+                <Button
+                  height="24px"
+                  onClick={() => handleSetTheme('dark')}
+                  variant={currentTheme === 'dark' ? 'solid invert' : 'stroked fill'}
+                  width="fit"
+                >
+                  <Box paddingHorizontal="12px">Dark</Box>
+                </Button>
+              </Box>
+            </Inline>
+          </Stack>
         </Inset>
         <Text color="text/tertiary">Cheats</Text>
         <Inset right="4px">
           <Stack gap="8px">
-            <Inline
-              alignVertical="center"
-              alignHorizontal="justify"
-              wrap={false}
-            >
-              <Box as="label" htmlFor="instant-connect-auth" width="full">
-                <Text size="12px">Bypass Connect Authorization</Text>
-              </Box>
-              {/** TODO: <Checkbox> component */}
-              <Box
-                as="input"
-                id="instant-connect-auth"
-                checked={bypassConnectAuth}
-                onChange={(e) => {
-                  setBypassConnectAuth(e.target.checked)
-                }}
-                type="checkbox"
+            <Inline alignVertical="center" alignHorizontal="justify" wrap={false}>
+              <Text size="12px">Bypass Connect Authorization</Text>
+              <Toggle
+                checked={bypassConnectAuth ?? false}
+                onChange={setBypassConnectAuth}
               />
             </Inline>
-            <Inline
-              alignVertical="center"
-              alignHorizontal="justify"
-              wrap={false}
-            >
-              <Box as="label" htmlFor="instant-signature-auth" width="full">
-                <Text size="12px">Bypass Signature Authorization</Text>
-              </Box>
-              {/** TODO: <Checkbox> component */}
-              <Box
-                as="input"
-                id="instant-signature-auth"
-                checked={bypassSignatureAuth}
-                onChange={(e) => {
-                  setBypassSignatureAuth(e.target.checked)
-                }}
-                type="checkbox"
+            <Inline alignVertical="center" alignHorizontal="justify" wrap={false}>
+              <Text size="12px">Bypass Signature Authorization</Text>
+              <Toggle
+                checked={bypassSignatureAuth ?? false}
+                onChange={setBypassSignatureAuth}
               />
             </Inline>
-            <Inline
-              alignVertical="center"
-              alignHorizontal="justify"
-              wrap={false}
-            >
-              <Box as="label" htmlFor="instant-transaction-auth" width="full">
-                <Text size="12px">Bypass Transaction Authorization</Text>
-              </Box>
-              {/** TODO: <Checkbox> component */}
-              <Box
-                as="input"
-                id="instant-transaction-auth"
-                checked={bypassTransactionAuth}
-                onChange={(e) => {
-                  setBypassTransactionAuth(e.target.checked)
-                }}
-                type="checkbox"
+            <Inline alignVertical="center" alignHorizontal="justify" wrap={false}>
+              <Text size="12px">Bypass Transaction Authorization</Text>
+              <Toggle
+                checked={bypassTransactionAuth ?? false}
+                onChange={setBypassTransactionAuth}
               />
             </Inline>
           </Stack>

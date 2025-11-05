@@ -1,6 +1,6 @@
 import * as Tabs_ from '@radix-ui/react-tabs'
 
-import { Bleed, Box, Columns, Column, Separator, Text } from '~/design-system'
+import { Bleed, Box, Column, Columns, Separator, Text } from '~/design-system'
 
 import * as styles from './TabsList.css'
 

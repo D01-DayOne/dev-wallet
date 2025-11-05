@@ -100,6 +100,9 @@ globalStyle(
           [inheritedColorVars.accent]: toRgb(
             defaultInheritedColor.accent.light,
           ),
+          '--flash-color': '#2a2520',
+          '--toggle-active-bg': '74, 144, 226',
+          '--toggle-inactive-bg': '232, 229, 224',
           ...assignVars(
             backgroundColorVars,
             mapValues(backgroundColor, (color) => toRgb(color.light.value)),
@@ -174,6 +177,9 @@ globalStyle(
         colorScheme: 'dark',
         vars: {
           [inheritedColorVars.accent]: toRgb(defaultInheritedColor.accent.dark),
+          '--flash-color': '#f9f7f4',
+          '--toggle-active-bg': '57, 255, 20',
+          '--toggle-inactive-bg': '68, 71, 75',
           ...assignVars(
             backgroundColorVars,
             mapValues(backgroundColor, (color) => toRgb(color.dark.value)),
