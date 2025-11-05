@@ -1,6 +1,6 @@
 import * as Tabs_ from '@radix-ui/react-tabs'
 
-import { Bleed, Box, Inline, Separator, Text } from '~/design-system'
+import { Bleed, Box, Columns, Column, Separator, Text } from '~/design-system'
 
 import * as styles from './TabsList.css'
 
@@ -16,27 +16,29 @@ export function TabsList({ items, onSelect }: TabsListProps) {
     <>
       <Tabs_.List asChild>
         <div>
-          <Inline gap="8px">
+          <Columns gap="0px" width="full">
             {items.map((item) => (
-              <Tabs_.Trigger
-                asChild
-                className={styles.tabTrigger}
-                key={item.value}
-                value={item.value}
-              >
-                <Box
-                  alignItems="center"
-                  justifyContent="center"
-                  cursor="pointer"
-                  display="flex"
-                  onClick={() => onSelect?.(item)}
-                  style={{ height: '32px' }}
+              <Column key={item.value}>
+                <Tabs_.Trigger
+                  asChild
+                  className={styles.tabTrigger}
+                  value={item.value}
                 >
-                  <Text size="11px">{item.label}</Text>
-                </Box>
-              </Tabs_.Trigger>
+                  <Box
+                    alignItems="center"
+                    justifyContent="center"
+                    cursor="pointer"
+                    display="flex"
+                    onClick={() => onSelect?.(item)}
+                    style={{ height: '32px' }}
+                    width="full"
+                  >
+                    <Text size="11px">{item.label}</Text>
+                  </Box>
+                </Tabs_.Trigger>
+              </Column>
             ))}
-          </Inline>
+          </Columns>
         </div>
       </Tabs_.List>
       <Bleed horizontal="-8px">

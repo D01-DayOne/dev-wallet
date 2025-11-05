@@ -1,8 +1,8 @@
+import { useState } from 'react'
 import { Container } from '~/components'
-import { Box, Inline, Inset, Stack, Text, Button } from '~/design-system'
+import { Box, Button, Inline, Inset, Stack, Text } from '~/design-system'
 import { getTheme, setTheme } from '~/design-system/utils/theme'
 import { useSettingsStore } from '~/zustand'
-import { useState } from 'react'
 
 export default function Settings() {
   const {
@@ -30,11 +30,7 @@ export default function Settings() {
       <Stack gap="16px">
         <Text color="text/tertiary">Appearance</Text>
         <Inset right="4px">
-          <Inline
-            alignVertical="center"
-            alignHorizontal="justify"
-            wrap={false}
-          >
+          <Inline alignVertical="center" alignHorizontal="justify" wrap={false}>
             <Box width="full">
               <Text size="12px">Theme</Text>
             </Box>

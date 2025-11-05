@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router'
 import {
   Box,
   Button,
-  Inline,
   Inset,
   Row,
   Rows,
@@ -48,19 +47,17 @@ export function Container({
                   display="flex"
                   paddingHorizontal="8px"
                   width="full"
-                  style={{ minHeight: '44px' }}
+                  style={{ minHeight: '44px', gap: '12px' }}
                 >
-                  <Inline
-                    alignVertical="center"
-                    alignHorizontal="justify"
-                    wrap={false}
-                  >
+                  <Box style={{ flex: 1, minWidth: 0 }}>
                     {typeof header === 'string' ? (
                       <Text size="16px">{header}</Text>
                     ) : (
                       header
                     )}
-                    {dismissable && (
+                  </Box>
+                  {dismissable && (
+                    <Box style={{ flexShrink: 0 }}>
                       <Button.Symbol
                         label="Close"
                         height="24px"
@@ -68,8 +65,8 @@ export function Container({
                         symbol="xmark"
                         variant="ghost primary"
                       />
-                    )}
-                  </Inline>
+                    </Box>
+                  )}
                 </Box>
               </Row>
               <Row height="content">

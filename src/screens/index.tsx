@@ -78,9 +78,9 @@ export default function Index() {
           <TabsList
             items={[
               { label: 'Accounts', value: 'accounts' },
-              { label: 'Blocks', value: 'blocks' },
-              { label: 'Transactions', value: 'transactions' },
               { label: 'Contracts', value: 'contracts' },
+              { label: 'Transactions', value: 'transactions' },
+              { label: 'Blocks', value: 'blocks' },
             ]}
             onSelect={(item) => {
               setParams({ tab: item.value })
@@ -90,14 +90,14 @@ export default function Index() {
           <TabsContent inset={false} value="accounts">
             <Accounts />
           </TabsContent>
-          <TabsContent inset={false} value="blocks">
-            <Blocks />
+          <TabsContent inset={false} scrollable="auto" value="contracts">
+            <Contracts />
           </TabsContent>
           <TabsContent inset={false} scrollable="auto" value="transactions">
             <Transactions />
           </TabsContent>
-          <TabsContent inset={false} scrollable="auto" value="contracts">
-            <Contracts />
+          <TabsContent inset={false} value="blocks">
+            <Blocks />
           </TabsContent>
         </Box>
       </Tabs.Root>
@@ -146,68 +146,8 @@ function AccountRow({ account }: { account: Account }) {
       position="relative"
       style={{ height: '100px' }}
     >
-      {active && (
-        <Text
-          color="text/tertiary"
-          size="9px"
-          style={{
-            position: 'absolute',
-            top: '8px',
-            right: '8px',
-          }}
-        >
-          ACTIVE
-        </Text>
-      )}
-      {account.state === 'loading' && (
-        <Box position="absolute" style={{ top: '4px', right: '8px' }}>
-          <Spinner size="12px" />
-        </Box>
-      )}
-      <Stack gap="16px">
-        <LabelledContent label="Account">
-          <Box width="fit" position="relative">
-            <Inline gap="4px">
-              {account.state === 'loading' && (
-                <Text color="text/tertiary" size="12px">
-                  {truncate(account.key, { start: 20, end: 20 })}
-                </Text>
-              )}
-              {account.displayName && (
-                <Text size="12px">{account.displayName}</Text>
-              )}
-              <Box title={account.address}>
-                <Text
-                  color={account.displayName ? 'text/tertiary' : undefined}
-                  family="address"
-                  size="12px"
-                >
-                  {truncatedAddress ?? account.address}
-                </Text>
-              </Box>
-              {account.address && (
-                <Box position="absolute" style={{ right: -24, top: -6 }}>
-                  <Button.Copy
-                    height="20px"
-                    text={account.address!}
-                    variant="ghost primary"
-                  />
-                </Box>
-              )}
-            </Inline>
-          </Box>
-        </LabelledContent>
-        <Inline gap="4px">
-          <Box style={{ width: '100px' }}>
-            <Balance address={account.address} />
-          </Box>
-          <Box style={{ width: '50px' }}>
-            <Nonce address={account.address} />
-          </Box>
-        </Inline>
-      </Stack>
       {account.state === 'loaded' && (
-        <Box position="absolute" style={{ bottom: '12px', right: '12px' }}>
+        <Box position="absolute" style={{ top: '12px', right: '12px' }}>
           <Inline gap="4px" wrap={false}>
             {account.impersonate && (
               <Button.Symbol
@@ -241,6 +181,64 @@ function AccountRow({ account }: { account: Account }) {
             </Link>
           </Inline>
         </Box>
+      )}
+      {account.state === 'loading' && (
+        <Box position="absolute" style={{ top: '12px', right: '12px' }}>
+          <Spinner size="12px" />
+        </Box>
+      )}
+      <Stack gap="16px">
+        <Box width="fit" position="relative">
+          <Inline gap="4px">
+            {account.state === 'loading' && (
+              <Text color="text/tertiary" size="12px">
+                {truncate(account.key, { start: 20, end: 20 })}
+              </Text>
+            )}
+            {account.displayName && (
+              <Text size="12px">{account.displayName}</Text>
+            )}
+            <Box title={account.address}>
+              <Text
+                color={account.displayName ? 'text/tertiary' : undefined}
+                family="address"
+                size="12px"
+              >
+                {truncatedAddress ?? account.address}
+              </Text>
+            </Box>
+            {account.address && (
+              <Box position="absolute" style={{ right: -24, top: -6 }}>
+                <Button.Copy
+                  height="20px"
+                  text={account.address!}
+                  variant="ghost primary"
+                />
+              </Box>
+            )}
+          </Inline>
+        </Box>
+        <Inline gap="4px">
+          <Box style={{ width: '100px' }}>
+            <Balance address={account.address} />
+          </Box>
+          <Box style={{ width: '50px' }}>
+            <Nonce address={account.address} />
+          </Box>
+        </Inline>
+      </Stack>
+      {active && (
+        <Text
+          color="text/accent/active"
+          size="9px"
+          style={{
+            position: 'absolute',
+            bottom: '8px',
+            left: '8px',
+          }}
+        >
+          ACTIVE
+        </Text>
       )}
     </Box>
   )

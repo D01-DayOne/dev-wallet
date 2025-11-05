@@ -40,7 +40,7 @@ Rivet is still the best dev tool that works well in the development flow of use
 
 ### Nightly Release
 
-DW: DevWallet is currently in active development. If you would like to try out the latest features, you can download the latest nightly build below:
+DevWallet is currently in active development. If you would like to try out the latest features, you can download the latest nightly build below:
 
 - **Chromium (Chrome, Brave, Arc, etc)**: [Download](https://github.com/D01-DayOne/dev-wallet/releases/latest)
 
