@@ -25,16 +25,23 @@ export function injectProvider() {
     requestMessenger: backgroundMessenger,
   })
 
-  // Inject provider directly onto window
-  window.ethereum = provider
-  window.dispatchEvent(new Event('ethereum#initialized'))
-
-  // Re-inject provider on demand
-  walletMessenger.reply('injectProvider', async () => {
+  // Only inject to window.ethereum if no other wallet exists
+  // This prevents conflicts with MetaMask, Coinbase, etc.
+  const hasExistingWallet = !!window.ethereum
+  if (!hasExistingWallet) {
     window.ethereum = provider
+    window.dispatchEvent(new Event('ethereum#initialized'))
+  }
+
+  // Re-inject provider on demand (for compatibility)
+  walletMessenger.reply('injectProvider', async () => {
+    if (!hasExistingWallet) {
+      window.ethereum = provider
+    }
   })
 
-  // Announce provider
+  // Announce provider via EIP-6963 (modern multi-wallet support)
+  // This allows dapps to discover DevWallet even when other wallets are present
   announceProvider({
     info: {
       icon: generateBrandIcon(),

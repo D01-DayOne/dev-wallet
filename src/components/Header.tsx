@@ -1,4 +1,11 @@
-import { type ReactNode, useLayoutEffect, useMemo, useState } from 'react'
+import {
+  type ReactNode,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { Link } from 'react-router-dom'
 import { type Hex, formatGwei } from 'viem'
 
@@ -133,7 +140,33 @@ function Account() {
   const [key, setKey] = useState(0)
   useLayoutEffect(() => {
     requestAnimationFrame(() => setKey((key) => key + 1))
-  }, [])
+  }, [account?.address])
+
+  // Flash animation when account changes
+  const [isFlashing, setIsFlashing] = useState(false)
+  const [transitionDuration, setTransitionDuration] = useState('200ms')
+  const prevAccountRef = useRef<string | undefined>(account?.address)
+
+  useEffect(() => {
+    if (
+      account?.address &&
+      account.address !== prevAccountRef.current &&
+      prevAccountRef.current !== undefined
+    ) {
+      // Fast switch to flash color (50ms)
+      setTransitionDuration('50ms')
+      setIsFlashing(true)
+
+      // Then slowly fade back (200ms)
+      const fadeTimer = setTimeout(() => {
+        setTransitionDuration('200ms')
+        setIsFlashing(false)
+      }, 50)
+
+      return () => clearTimeout(fadeTimer)
+    }
+    prevAccountRef.current = account?.address
+  }, [account?.address])
 
   if (!account) return null
   return (
@@ -145,7 +178,13 @@ function Account() {
         }}
         display="flex"
         height="full"
-        style={{ cursor: 'default' }}
+        style={{
+          cursor: 'default',
+          transition: `background-color ${transitionDuration} ease-out`,
+          ...(isFlashing && {
+            backgroundColor: 'var(--flash-color)',
+          }),
+        }}
       >
         <Inset horizontal="8px">
           {account && (

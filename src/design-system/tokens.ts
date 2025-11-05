@@ -20,7 +20,7 @@ export type BackgroundColorValue = Record<
 export const backgroundColor = {
   'surface/primary': {
     light: {
-      value: '#f5f5f5',
+      value: '#f9f7f4',
       scheme: 'light',
       hover: {
         brightness: '0.98',
@@ -36,7 +36,7 @@ export const backgroundColor = {
   },
   'surface/primary/elevated': {
     light: {
-      value: '#FFFFFF',
+      value: '#fdfcfb',
       scheme: 'light',
       hover: {
         brightness: '0.98',
@@ -52,7 +52,7 @@ export const backgroundColor = {
   },
   'surface/secondary': {
     light: {
-      value: '#F0F1F5',
+      value: '#f3f2ee',
       scheme: 'light',
       hover: {
         brightness: '0.98',
@@ -68,7 +68,7 @@ export const backgroundColor = {
   },
   'surface/secondary/elevated': {
     light: {
-      value: '#FFFFFF',
+      value: '#fdfcfb',
       scheme: 'light',
       hover: {
         brightness: '0.98',
@@ -84,7 +84,7 @@ export const backgroundColor = {
   },
   'surface/fill': {
     light: {
-      value: '#D9DBDF',
+      value: '#e8e5e0',
       scheme: 'light',
       hover: {
         brightness: '0.98',
@@ -100,7 +100,7 @@ export const backgroundColor = {
   },
   'surface/fill/secondary': {
     light: {
-      value: '#E4E6EA',
+      value: '#ede9e4',
       scheme: 'light',
       hover: {
         brightness: '0.98',
@@ -116,7 +116,7 @@ export const backgroundColor = {
   },
   'surface/fill/tertiary': {
     light: {
-      value: '#ececec',
+      value: '#f5f3f0',
       scheme: 'light',
       hover: {
         brightness: '0.98',
@@ -148,7 +148,7 @@ export const backgroundColor = {
   },
   'surface/fill/quarternary': {
     light: {
-      value: '#f9f9f9',
+      value: '#faf9f7',
       scheme: 'light',
       hover: {
         brightness: '0.98',
@@ -352,44 +352,48 @@ export type BackgroundColor = keyof typeof backgroundColor
 export type ForegroundColorValue = Record<ColorScheme, string>
 export const foregroundColor = {
   'separator/primary': {
-    light: '#000000',
+    light: '#3d3932',
     dark: '#ffffff',
   },
   'separator/secondary': {
-    light: '#202020',
+    light: '#5a5550',
     dark: '#9f9f9f',
   },
   'separator/tertiary': {
-    light: '#E4E5E9',
+    light: '#dcd9d4',
     dark: '#3C3F43',
   },
   'separator/quarternary': {
-    light: '#F1F2F6',
+    light: '#ebe8e3',
     dark: '#2B2C2F',
   },
   'stroke/primary': {
-    light: '#E4E5E9',
+    light: '#dcd9d4',
     dark: '#3C3F43',
   },
   'stroke/secondary': {
-    light: '#F1F2F6',
+    light: '#ebe8e3',
     dark: '#2B2C2F',
   },
   'text/primary': {
-    light: '#000000',
+    light: '#2a2520',
     dark: '#FFFFFF',
   },
   'text/secondary': {
-    light: '#5B5C5F',
+    light: '#5a5550',
     dark: '#C2C5CB',
   },
   'text/tertiary': {
-    light: '#848789',
+    light: '#7a7570',
     dark: '#9A9BA1',
   },
   'text/quarternary': {
-    light: '#A3A4A8',
+    light: '#9a9590',
     dark: '#78797E',
+  },
+  'text/accent/active': {
+    light: '#4a90e2',
+    dark: '#39ff14',
   },
 } as const satisfies Record<string, ForegroundColorValue>
 export type ForegroundColor = keyof typeof foregroundColor

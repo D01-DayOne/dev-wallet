@@ -16,6 +16,7 @@ export { Separator } from './components/Separator'
 export { SFSymbol } from './components/SFSymbol'
 export { Stack } from './components/Stack'
 export { Text } from './components/Text'
+export { Toggle } from './components/Toggle'
 
 export { initializeTheme } from './utils/initializeTheme'
 export { getTheme, setTheme } from './utils/theme'
