@@ -20,7 +20,9 @@ export function Toggle({ checked, onChange, disabled }: ToggleProps) {
         width: '37px',
         height: '20px',
         borderRadius: '4px',
-        backgroundColor: checked ? 'rgb(var(--toggle-active-bg))' : 'rgb(var(--toggle-inactive-bg))',
+        backgroundColor: checked
+          ? 'rgb(var(--toggle-active-bg))'
+          : 'rgb(var(--toggle-inactive-bg))',
         border: 'none',
         transition: 'background-color 200ms ease',
         outline: 'none',

@@ -1,4 +1,11 @@
-import { type ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import {
+  type ReactNode,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { Link } from 'react-router-dom'
 import { type Hex, formatGwei } from 'viem'
 
@@ -141,7 +148,11 @@ function Account() {
   const prevAccountRef = useRef<string | undefined>(account?.address)
 
   useEffect(() => {
-    if (account?.address && account.address !== prevAccountRef.current && prevAccountRef.current !== undefined) {
+    if (
+      account?.address &&
+      account.address !== prevAccountRef.current &&
+      prevAccountRef.current !== undefined
+    ) {
       // Fast switch to flash color (50ms)
       setTransitionDuration('50ms')
       setIsFlashing(true)
@@ -172,7 +183,7 @@ function Account() {
           transition: `background-color ${transitionDuration} ease-out`,
           ...(isFlashing && {
             backgroundColor: 'var(--flash-color)',
-          })
+          }),
         }}
       >
         <Inset horizontal="8px">
