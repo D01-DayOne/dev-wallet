@@ -34,7 +34,7 @@ Rivet is still the best dev tool that works well in the development flow of use
 
 ## Download
 
-- **Chromium (Chrome, Brave, Arc, etc)** [TBD]
+- **Chromium (Chrome, Brave, Arc, etc)** [[Download]](https://chromewebstore.google.com/detail/emajibkjkkilgdahffjhapcljjhhdpeb?utm_source=item-share-cb)
 - **Firefox**: coming soon
 - **Safari**: coming soon
 
@@ -147,11 +147,19 @@ bun run dev
 
 This will run a script that will build the Web Extension, start a dev server for the Test Dapp, and automatically open Chrome with a fresh profile and the extension installed.
 
-## Known Issues
+## Multi-Wallet Support
 
-DW: DevWallet uses the `window.ethereum` interface, which means it has some known conflicts with other wallets which also rely on `window.ethereum`. Once Dapps start to integrate [EIP-6963](https://eips.ethereum.org/EIPS/eip-6963) to handle multiple injected wallets, this should not be a problem anymore.
+DW: DevWallet supports both legacy `window.ethereum` injection and modern [EIP-6963](https://eips.ethereum.org/EIPS/eip-6963) multi-wallet discovery.
 
-For best results it is recommended to run DW: DevWallet in its own Chrome profile, without any other conflicting browser wallets installed.
+**EIP-6963 Support:**
+- DevWallet announces itself via EIP-6963, allowing dapps to discover it alongside other wallets
+- If another wallet (MetaMask, Coinbase, etc.) is already installed, DevWallet will NOT overwrite `window.ethereum` to avoid conflicts
+- Dapps that support EIP-6963 can present users with a wallet selector to choose between DevWallet and other installed wallets
+- The test dapp (`bun run dapp`) demonstrates EIP-6963 wallet discovery
+
+**Legacy Dapp Compatibility:**
+- If no other wallet is present, DevWallet will inject itself as `window.ethereum` for compatibility with older dapps
+- For testing legacy dapps, run DevWallet in its own Chrome profile without other wallets installed
 
 Helpful note: A fresh Chrome profile gets instantiated when running the dev script: `bun run dev`.
 

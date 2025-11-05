@@ -3,7 +3,7 @@ import { getTheme } from './theme'
 const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
 
 const { storageTheme, systemTheme } = getTheme()
-const theme = storageTheme || systemTheme || 'dark'
+const theme = storageTheme || systemTheme || 'light'
 
 document.documentElement.dataset.theme = theme
 

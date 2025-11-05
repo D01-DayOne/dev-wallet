@@ -1,6 +1,8 @@
 import { Container } from '~/components'
-import { Box, Inline, Inset, Stack, Text } from '~/design-system'
+import { Box, Inline, Inset, Stack, Text, Button } from '~/design-system'
+import { getTheme, setTheme } from '~/design-system/utils/theme'
 import { useSettingsStore } from '~/zustand'
+import { useState } from 'react'
 
 export default function Settings() {
   const {
@@ -12,9 +14,40 @@ export default function Settings() {
     setBypassTransactionAuth,
   } = useSettingsStore()
 
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    const { storageTheme, systemTheme } = getTheme()
+    return storageTheme || systemTheme || 'light'
+  })
+
+  const handleToggleTheme = () => {
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark'
+    setTheme(newTheme)
+    setCurrentTheme(newTheme)
+  }
+
   return (
     <Container dismissable fit header="Settings">
       <Stack gap="16px">
+        <Text color="text/tertiary">Appearance</Text>
+        <Inset right="4px">
+          <Inline
+            alignVertical="center"
+            alignHorizontal="justify"
+            wrap={false}
+          >
+            <Box width="full">
+              <Text size="12px">Theme</Text>
+            </Box>
+            <Button
+              height="24px"
+              onClick={handleToggleTheme}
+              variant="stroked fill"
+              width="fit"
+            >
+              {currentTheme === 'dark' ? 'Dark' : 'Light'}
+            </Button>
+          </Inline>
+        </Inset>
         <Text color="text/tertiary">Cheats</Text>
         <Inset right="4px">
           <Stack gap="8px">
