@@ -85,12 +85,15 @@ export const accountStore = createStore<AccountStore>(
         return {
           ...state,
           account: get().account || accounts[0],
-          accounts: [
-            ...state.accounts.filter(
-              (x) => x.rpcUrl !== rpcUrl || x.impersonate,
-            ),
-            ...accounts,
-          ],
+          accounts: uniqBy(
+            [
+              ...state.accounts.filter(
+                (x) => x.rpcUrl !== rpcUrl || x.impersonate,
+              ),
+              ...accounts,
+            ],
+            (x) => x.address.toLowerCase(),
+          ),
         }
       })
     },

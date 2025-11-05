@@ -99,7 +99,7 @@ function HeaderItem({
       <Text color="text/tertiary" size="9px" wrap={false}>
         {label.toUpperCase()}
       </Text>
-      <Box>{children}</Box>
+      <Box paddingTop="2px">{children}</Box>
     </Stack>
   )
 }
