@@ -81,14 +81,11 @@ export default function BlockDetails() {
               </Column>
             )}
             <Column width="1/4">
-              <LabelledContent label="Base Fee">
+              <LabelledContent label="Base Fee (gwei)">
                 <Text family="numeric" size="12px">
                   {numberIntl6SigFigs.format(
                     Number(formatGwei(block.baseFeePerGas!)),
-                  )}{' '}
-                  <Text family="numeric" color="text/tertiary">
-                    gwei
-                  </Text>
+                  )}
                 </Text>
               </LabelledContent>
             </Column>

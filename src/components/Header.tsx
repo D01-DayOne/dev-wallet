@@ -431,10 +431,9 @@ function BaseFee() {
   )
   if (!block) return null
   return (
-    <HeaderItem label="Base Fee">
+    <HeaderItem label="Base Fee (gwei)">
       <Text family="numeric" size="12px">
-        {intl.format(Number(formatGwei(block.baseFeePerGas!)))}{' '}
-        <Text color="text/tertiary">gwei</Text>
+        {intl.format(Number(formatGwei(block.baseFeePerGas!)))}
       </Text>
     </HeaderItem>
   )

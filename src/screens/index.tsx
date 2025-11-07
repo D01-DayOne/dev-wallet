@@ -93,7 +93,7 @@ export default function Index() {
           <TabsContent inset={false} scrollable="auto" value="contracts">
             <Contracts />
           </TabsContent>
-          <TabsContent inset={false} scrollable="auto" value="transactions">
+          <TabsContent inset={false} scrollable="auto" value="txs">
             <Transactions />
           </TabsContent>
           <TabsContent inset={false} value="blocks">
@@ -135,7 +135,7 @@ function AccountRow({ account }: { account: Account }) {
   const active = activeAccount?.address === account.address
   const truncatedAddress =
     account.address && account.address.length > 0
-      ? truncate(account.address, { start: 6, end: 4 })
+      ? truncate(account.address, { start: 5, end: 5 })
       : undefined
   return (
     <Box
@@ -192,7 +192,7 @@ function AccountRow({ account }: { account: Account }) {
       )}
       <Stack gap="16px">
         <Box width="fit" position="relative">
-          <Inline gap="4px">
+          <Inline gap="8px">
             {account.state === 'loading' && (
               <Text color="text/tertiary" size="12px">
                 {truncate(account.key, { start: 20, end: 20 })}

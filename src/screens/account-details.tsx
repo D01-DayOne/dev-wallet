@@ -14,6 +14,17 @@ import {
 import { TabsContent, TabsList, Tooltip } from '~/components'
 import * as Form from '~/components/form'
 import { Spinner } from '~/components/svgs'
+import { truncate } from '~/utils'
+
+function formatBalance(balance: bigint, decimals: number, maxDecimals = 5): string {
+  const formatted = formatUnits(balance, decimals)
+  const [whole, decimal] = formatted.split('.')
+  if (!decimal) return whole
+  const truncated = decimal.slice(0, maxDecimals)
+  // Remove trailing zeros
+  const trimmed = truncated.replace(/0+$/, '')
+  return trimmed ? `${whole}.${trimmed}` : whole
+}
 import {
   Bleed,
   Box,
@@ -23,13 +34,12 @@ import {
   Inline,
   Input,
   Inset,
-  Row,
-  Rows,
   Separator,
   Stack,
   Text,
 } from '~/design-system'
 import { useAccountTokens } from '~/hooks/useAccountTokens'
+import { useBalance } from '~/hooks/useBalance'
 import { useErc20Balance } from '~/hooks/useErc20Balance'
 import { useErc20Metadata } from '~/hooks/useErc20Metadata'
 import { useSetErc20Balance } from '~/hooks/useSetErc20Balance'
@@ -66,9 +76,9 @@ export default function AccountDetails() {
             <Text color="text/tertiary" size="9px">
               Account
             </Text>
-            <Text.Truncated family="address" size="11px">
-              {address}
-            </Text.Truncated>
+            <Text family="address" size="11px">
+              {truncate(address, { start: 5, end: 5 })}
+            </Text>
           </Stack>
         </Inline>
       </Box>
@@ -115,19 +125,23 @@ function Tokens({ accountAddress }: { accountAddress: Address }) {
               TOKEN
             </Text>
           </Column>
-          <Column alignVertical="center">
+          <Column alignVertical="center" width="content">
             <Text align="right" color="text/tertiary" size="9px" wrap={false}>
               BALANCE
             </Text>
           </Column>
-          <Column width="content">
-            <Box style={{ width: '24px' }} />
+          <Column alignVertical="center" width="content">
+            <Text align="right" color="text/tertiary" size="9px" wrap={false}>
+              ACTIONS
+            </Text>
           </Column>
         </Columns>
       </Box>
       <Bleed horizontal="-8px">
         <Separator />
       </Bleed>
+      {/* Native ETH */}
+      <NativeTokenRow accountAddress={accountAddress} />
       {/* TODO: Handle empty state. */}
       {tokens?.map((token) =>
         token.visible ? (
@@ -183,10 +197,78 @@ function ImportToken({ accountAddress }: { accountAddress: Address }) {
   )
 }
 
+function NativeTokenRow({ accountAddress }: { accountAddress: Address }) {
+  const navigate = useNavigate()
+  const { data: balance } = useBalance({ address: accountAddress })
+
+  const decimals = 18
+  const symbol = 'ETH'
+  const name = 'Ethereum'
+
+  return (
+    <>
+      <Inset vertical="12px">
+        <Box position="relative">
+          <Columns alignVertical="center" alignHorizontal="justify" gap="8px">
+            <Column width="content">
+              <Stack gap="4px">
+                <Inline gap="8px" alignVertical="center">
+                  <Tooltip label={name}>
+                    <Box
+                      borderWidth="1px"
+                      borderColor="surface/invert@0.2"
+                      padding="2px"
+                    >
+                      <Text family="numeric" color="text/tertiary" size="9px">
+                        {symbol}
+                      </Text>
+                    </Box>
+                  </Tooltip>
+                  <Text size="12px">{name}</Text>
+                </Inline>
+                <Text color="text/tertiary" size="11px">
+                  Native Token
+                </Text>
+              </Stack>
+            </Column>
+            <Column width="content">
+              {typeof balance === 'bigint' && (
+                <Text
+                  align="right"
+                  family="numeric"
+                  size="12px"
+                >
+                  {formatBalance(balance, decimals)}
+                </Text>
+              )}
+            </Column>
+            <Column width="content">
+              <Button.Symbol
+                label="Send"
+                symbol="paperplane"
+                height="36px"
+                variant="ghost blue"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  navigate(`/transfer/${accountAddress}`)
+                }}
+              />
+            </Column>
+          </Columns>
+        </Box>
+      </Inset>
+      <Box marginHorizontal="-8px">
+        <Separator />
+      </Box>
+    </>
+  )
+}
+
 function TokenRow({
   accountAddress,
   tokenAddress,
 }: { accountAddress: Address; tokenAddress: Address }) {
+  const navigate = useNavigate()
   const { hideToken, removeToken } = useAccountTokens({
     address: accountAddress,
   })
@@ -221,61 +303,46 @@ function TokenRow({
     <>
       <Inset vertical="12px">
         <Box position="relative">
-          <Columns alignVertical="center" gap="4px">
-            <Column>
-              <Rows gap="8px">
-                <Row>
-                  {isLoading ? (
-                    <Inline alignVertical="center" gap="4px">
-                      <Spinner size="11px" />
-                      <Text color="text/tertiary" size="12px">
-                        Importing...
-                      </Text>
-                    </Inline>
-                  ) : (
-                    <Text size="12px">{name}</Text>
-                  )}
-                </Row>
-                <Row>
-                  <Inline>
-                    <Box paddingRight="16px" style={{ width: '160px' }}>
-                      <Tooltip label={tokenAddress}>
-                        <Text.Truncated
-                          family="address"
-                          color="text/tertiary"
-                          size="11px"
-                        >
-                          {tokenAddress}
-                        </Text.Truncated>
-                      </Tooltip>
-                    </Box>
-                    {symbol && (
-                      <Box position="relative">
-                        <Box
-                          position="absolute"
-                          style={{ left: -10, top: -2.5 }}
-                        >
-                          <Box
-                            borderWidth="1px"
-                            borderColor="surface/invert@0.2"
-                            padding="2px"
-                          >
-                            <Text
-                              family="numeric"
-                              color="text/tertiary"
-                              size="9px"
-                            >
-                              {symbol}
-                            </Text>
-                          </Box>
-                        </Box>
-                      </Box>
-                    )}
+          <Columns alignVertical="center" alignHorizontal="justify" gap="8px">
+            <Column width="content">
+              <Stack gap="4px">
+                {isLoading ? (
+                  <Inline alignVertical="center" gap="4px">
+                    <Spinner size="11px" />
+                    <Text color="text/tertiary" size="12px">
+                      Importing...
+                    </Text>
                   </Inline>
-                </Row>
-              </Rows>
+                ) : (
+                  <>
+                    <Inline gap="8px" alignVertical="center">
+                      <Tooltip label={name || 'Token'}>
+                        <Box
+                          borderWidth="1px"
+                          borderColor="surface/invert@0.2"
+                          padding="2px"
+                        >
+                          <Text family="numeric" color="text/tertiary" size="9px">
+                            {symbol || '???'}
+                          </Text>
+                        </Box>
+                      </Tooltip>
+                      <Text size="12px">{name}</Text>
+                    </Inline>
+                    <Tooltip label={tokenAddress}>
+                      <Text.Truncated
+                        family="address"
+                        color="text/tertiary"
+                        size="11px"
+                      >
+                        {tokenAddress}
+                      </Text.Truncated>
+                    </Tooltip>
+                  </>
+                )}
+              </Stack>
             </Column>
-            <Column>
+            <Column width="content">
               {typeof balance === 'bigint' && typeof decimals === 'number' && (
                 <BalanceInput
                   address={accountAddress}
@@ -286,16 +353,28 @@ function TokenRow({
               )}
             </Column>
             <Column width="content">
-              <Button.Symbol
-                label="Delete"
-                symbol="trash"
-                height="24px"
-                variant="ghost red"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  hideToken({ tokenAddress })
-                }}
-              />
+              <Inline gap="4px">
+                <Button.Symbol
+                  label="Send"
+                  symbol="paperplane"
+                  height="36px"
+                  variant="ghost blue"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    navigate(`/transfer/${accountAddress}/${tokenAddress}`)
+                  }}
+                />
+                <Button.Symbol
+                  label="Delete"
+                  symbol="trash"
+                  height="36px"
+                  variant="ghost red"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    hideToken({ tokenAddress })
+                  }}
+                />
+              </Inline>
             </Column>
           </Columns>
         </Box>
@@ -318,13 +397,12 @@ function BalanceInput({
   decimals: number
   tokenAddress: Address
 }) {
-  // TODO: Handle errors when setting balance.
   const { mutate, isPending } = useSetErc20Balance()
 
-  const [value, setValue] = useState(formatUnits(balance, decimals))
+  const [value, setValue] = useState(formatBalance(balance, decimals))
 
   useEffect(() => {
-    setValue(formatUnits(balance, decimals))
+    setValue(formatBalance(balance, decimals))
   }, [balance, decimals])
 
   return (

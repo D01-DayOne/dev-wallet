@@ -213,7 +213,7 @@ export function AbiFunctionContent({
                   <Button
                     height="24px"
                     onClick={() => invoke({ type: 'read' })}
-                    variant="stroked fill"
+                    variant="solid invert"
                     width="fit"
                     type="button"
                   >
@@ -222,7 +222,7 @@ export function AbiFunctionContent({
                   <Button
                     height="24px"
                     onClick={() => invoke({ type: 'write' })}
-                    variant="stroked fill"
+                    variant="solid invert"
                     width="fit"
                     type="button"
                   >
@@ -232,7 +232,7 @@ export function AbiFunctionContent({
               ) : isWrite || abiFunction.inputs?.length > 0 ? (
                 <Button
                   height="24px"
-                  variant="stroked fill"
+                  variant="solid invert"
                   width="fit"
                   type="submit"
                 >
