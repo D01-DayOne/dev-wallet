@@ -13,6 +13,7 @@ import {
 import { Container } from '~/components'
 import * as Form from '~/components/form'
 import { Spinner } from '~/components/svgs'
+import { erc20Abi } from '~/constants/abi'
 import {
   Box,
   Button,
@@ -28,7 +29,6 @@ import { useClient } from '~/hooks/useClient'
 import { useErc20Balance } from '~/hooks/useErc20Balance'
 import { useErc20Metadata } from '~/hooks/useErc20Metadata'
 import { useWriteContract } from '~/hooks/useWriteContract'
-import { erc20Abi } from '~/constants/abi'
 
 type TransferFormData = {
   recipient: string
@@ -176,7 +176,8 @@ export default function TokenTransfer() {
               register={register('amount', {
                 required: 'Amount is required',
                 validate: (value) => {
-                  if (!value || value === '0') return 'Amount must be greater than 0'
+                  if (!value || value === '0')
+                    return 'Amount must be greater than 0'
                   try {
                     const amount = parseUnits(value, decimals)
                     if (balance && amount > balance) {

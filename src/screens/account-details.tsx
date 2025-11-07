@@ -16,7 +16,11 @@ import * as Form from '~/components/form'
 import { Spinner } from '~/components/svgs'
 import { truncate } from '~/utils'
 
-function formatBalance(balance: bigint, decimals: number, maxDecimals = 5): string {
+function formatBalance(
+  balance: bigint,
+  decimals: number,
+  maxDecimals = 5,
+): string {
   const formatted = formatUnits(balance, decimals)
   const [whole, decimal] = formatted.split('.')
   if (!decimal) return whole
@@ -233,11 +237,7 @@ function NativeTokenRow({ accountAddress }: { accountAddress: Address }) {
             </Column>
             <Column width="content">
               {typeof balance === 'bigint' && (
-                <Text
-                  align="right"
-                  family="numeric"
-                  size="12px"
-                >
+                <Text align="right" family="numeric" size="12px">
                   {formatBalance(balance, decimals)}
                 </Text>
               )}
@@ -322,7 +322,11 @@ function TokenRow({
                           borderColor="surface/invert@0.2"
                           padding="2px"
                         >
-                          <Text family="numeric" color="text/tertiary" size="9px">
+                          <Text
+                            family="numeric"
+                            color="text/tertiary"
+                            size="9px"
+                          >
                             {symbol || '???'}
                           </Text>
                         </Box>
