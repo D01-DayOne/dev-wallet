@@ -79,7 +79,7 @@ export default function Index() {
             items={[
               { label: 'Accounts', value: 'accounts' },
               { label: 'Contracts', value: 'contracts' },
-              { label: 'Transactions', value: 'transactions' },
+              { label: 'TXs', value: 'txs' },
               { label: 'Blocks', value: 'blocks' },
             ]}
             onSelect={(item) => {
