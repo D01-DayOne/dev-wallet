@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import {
   type Address,
   type BaseError,
+  type Hex,
   formatUnits,
   isAddress,
   parseUnits,
@@ -86,7 +87,7 @@ export default function TokenTransfer() {
     try {
       const amount = parseUnits(data.amount, decimals)
 
-      let txHash: string
+      let txHash: Hex
 
       if (isNativeTransfer) {
         // Native ETH transfer
@@ -107,11 +108,31 @@ export default function TokenTransfer() {
         })
       }
 
-      toast.success(`Transfer successful! TX: ${txHash.slice(0, 10)}...`)
-      navigate(-1)
+      // Wait for transaction receipt to confirm success/failure
+      const receipt = await client.waitForTransactionReceipt({ hash: txHash })
+
+      if (receipt.status === 'success') {
+        toast.success(`Transfer successful! TX: ${txHash.slice(0, 10)}...`)
+        navigate(-1)
+      } else {
+        toast.error('Transaction reverted')
+      }
     } catch (error) {
       const err = error as BaseError
-      toast.error(err.shortMessage || 'Transfer failed')
+      console.error('Transfer error:', err)
+
+      // Show detailed error message including cause if available
+      const errorMessage =
+        err.shortMessage ||
+        (err.cause as any)?.reason ||
+        (err.cause as any)?.shortMessage ||
+        err.message ||
+        'Transfer failed'
+
+      toast.error(errorMessage, {
+        description: (err.cause as any)?.details || err.details,
+        duration: 5000,
+      })
     } finally {
       setIsSubmitting(false)
     }
