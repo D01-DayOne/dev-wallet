@@ -679,6 +679,7 @@ export const symbolNames = [
   'minus',
   'backward.fill',
   'arrow.counterclockwise',
+  'paperplane',
 ] as const
 export type SymbolName = (typeof symbolNames)[number]
 

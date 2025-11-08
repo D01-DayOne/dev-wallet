@@ -18,6 +18,7 @@ import {
   Minus,
   Plus,
   RefreshCcw,
+  Send,
   Settings,
   SkipBack,
   SquarePen,
@@ -73,6 +74,7 @@ const symbolToIcon: Record<SymbolName, LucideIcon> = {
   minus: Minus,
   'backward.fill': ArrowLeft,
   'arrow.counterclockwise': Undo2,
+  paperplane: Send,
 }
 
 export const SFSymbol = forwardRef<SVGSVGElement, SFSymbolProps>(

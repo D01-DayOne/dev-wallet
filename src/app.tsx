@@ -50,6 +50,7 @@ import OnboardingRun from './screens/onboarding/run'
 import OnboardingStart from './screens/onboarding/start'
 import Session from './screens/session'
 import Settings from './screens/settings'
+import TokenTransfer from './screens/token-transfer'
 import TransactionDetails from './screens/transaction-details'
 
 export function init({ type = 'standalone' }: { type?: AppMeta['type'] } = {}) {
@@ -72,6 +73,10 @@ export function init({ type = 'standalone' }: { type?: AppMeta['type'] } = {}) {
         {
           path: 'account/:address',
           element: <AccountDetails />,
+        },
+        {
+          path: 'transfer/:accountAddress/:tokenAddress?',
+          element: <TokenTransfer />,
         },
         {
           path: 'block-config',
