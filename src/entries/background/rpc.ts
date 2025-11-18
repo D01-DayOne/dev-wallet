@@ -65,7 +65,7 @@ export function setupRpcHandler({ messenger }: { messenger: Messenger }) {
       const { addPendingRequest, removePendingRequest } =
         pendingRequestsStore.getState()
 
-      if (!session)
+      if (isInpage && !session)
         return {
           id: request.id,
           jsonrpc: '2.0',
