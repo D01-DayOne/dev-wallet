@@ -55,6 +55,17 @@ export function useAccountTokens({ address }: UseAccountTokensParameters) {
   const tokensStore = useTokensStore()
   const { network } = useNetworkStore()
 
+  const key = useMemo(
+    () =>
+      address
+        ? getTokensKey({
+            accountAddress: address,
+            rpcUrl: network.rpcUrl,
+          })
+        : undefined,
+    [address, network.rpcUrl],
+  )
+
   const addToken = useCallback(
     (args: Parameters<TokensActions['addToken']>[1]) =>
       address
@@ -66,7 +77,7 @@ export function useAccountTokens({ address }: UseAccountTokensParameters) {
             args,
           )
         : undefined,
-    [address, network.rpcUrl, tokensStore.addToken],
+    [address, network.rpcUrl, tokensStore],
   )
 
   const hideToken = useCallback(
@@ -80,7 +91,7 @@ export function useAccountTokens({ address }: UseAccountTokensParameters) {
             args,
           )
         : undefined,
-    [address, network.rpcUrl, tokensStore.hideToken],
+    [address, network.rpcUrl, tokensStore],
   )
 
   const removeToken = useCallback(
@@ -94,21 +105,10 @@ export function useAccountTokens({ address }: UseAccountTokensParameters) {
             args,
           )
         : undefined,
-    [address, network.rpcUrl, tokensStore.removeToken],
+    [address, network.rpcUrl, tokensStore],
   )
 
-  const tokens = useMemo(
-    () =>
-      address
-        ? tokensStore.tokens[
-            getTokensKey({
-              accountAddress: address,
-              rpcUrl: network.rpcUrl,
-            })
-          ]
-        : [],
-    [address, network.rpcUrl, tokensStore.tokens],
-  )
+  const tokens = key ? tokensStore.tokens[key] || [] : []
 
   return Object.assign(useQuery(queryOptions), {
     addToken,
