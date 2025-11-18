@@ -1,5 +1,6 @@
 import { type Address, parseAbiItem } from 'abitype'
 import type { GetLogsParameters } from 'viem'
+import { erc20Abi } from 'viem'
 
 import { getLogsQueryOptions } from '~/hooks/useGetLogs'
 import { queryClient } from '~/react-query'
@@ -17,6 +18,8 @@ export async function getAccountTokens(
     toBlock: GetLogsParameters['toBlock']
   },
 ) {
+  console.log('getAccountTokens params:', { address, fromBlock, toBlock })
+
   const [transfersFrom, transfersTo] = await Promise.all([
     queryClient.fetchQuery(
       getLogsQueryOptions(client, {
@@ -43,13 +46,30 @@ export async function getAccountTokens(
       }),
     ),
   ])
-
-  // TODO: Check if log addresses are ERC20 tokens.
-
-  return [
+    // console.log(transfersFrom, transfersTo, 'transfers');
+  const potentialTokens = [
     ...new Set([
       ...(transfersFrom?.map((t) => t.address) || []),
       ...(transfersTo?.map((t) => t.address) || []),
     ]),
   ]
+
+  const erc20Tokens = await Promise.all(
+    potentialTokens.map(async (tokenAddress) => {
+      try {
+        const decimals = await client.readContract({
+          address: tokenAddress,
+          abi: erc20Abi,
+          functionName: 'decimals',
+        })
+        return typeof decimals === 'number' && decimals >= 0 && decimals <= 255
+          ? tokenAddress
+          : null
+      } catch {
+        return null
+      }
+    }),
+  )
+
+  return erc20Tokens.filter((token): token is Address => token !== null)
 }
