@@ -18,13 +18,7 @@ export async function getAccountTokens(
 ) {
   const effectiveFromBlock = 0n
   const effectiveToBlock = toBlock ?? 'latest'
-
-  console.log('Effective blocks:', {
-    effectiveFromBlock,
-    effectiveToBlock,
-    originalFromBlock: fromBlock,
-  })
-
+  console.log(fromBlock)
   // Transfer event signature hash (keccak256 of "Transfer(address,address,uint256)")
   const transferEventSignature =
     '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef' as const
