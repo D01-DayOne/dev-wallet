@@ -25,7 +25,6 @@ import {
   Stack,
   Text,
 } from '~/design-system'
-// import { getAccountTokensQueryKey } from '~/hooks/useAccountTokens'
 import { useBalance } from '~/hooks/useBalance'
 import { useClient } from '~/hooks/useClient'
 import { useErc20Balance } from '~/hooks/useErc20Balance'
