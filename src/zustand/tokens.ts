@@ -118,10 +118,12 @@ export const tokensStore = createStore<TokensStore>(
         const tokens = { ...state.tokens }
 
         for (const tokenAddress of tokenAddresses) {
-          const exists = (tokens[serializedKey] || []).some(
-            (x) => x.address === tokenAddress,
+          const existingToken = (tokens[serializedKey] || []).find(
+            (x) => x.address.toLowerCase() === tokenAddress.toLowerCase(),
           )
-          if (!exists)
+          // Only add if token doesn't exist yet
+          // If it exists but is hidden, respect the user's choice and don't modify it
+          if (!existingToken)
             tokens[serializedKey] = [
               {
                 address: tokenAddress,

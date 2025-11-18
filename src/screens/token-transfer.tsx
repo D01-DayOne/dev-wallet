@@ -2,34 +2,19 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import {
-  type Address,
-  type BaseError,
-  type Hex,
-  formatUnits,
-  isAddress,
-  parseUnits,
-} from 'viem'
+import { type Address, type BaseError, formatUnits, type Hex, isAddress, parseUnits, } from 'viem'
 
 import { Container } from '~/components'
 import * as Form from '~/components/form'
 import { Spinner } from '~/components/svgs'
 import { erc20Abi } from '~/constants/abi'
-import {
-  Box,
-  Button,
-  Column,
-  Columns,
-  Inline,
-  Separator,
-  Stack,
-  Text,
-} from '~/design-system'
+import { Box, Button, Column, Columns, Inline, Separator, Stack, Text, } from '~/design-system'
 import { useBalance } from '~/hooks/useBalance'
 import { useClient } from '~/hooks/useClient'
 import { useErc20Balance } from '~/hooks/useErc20Balance'
 import { useErc20Metadata } from '~/hooks/useErc20Metadata'
 import { useWriteContract } from '~/hooks/useWriteContract'
+import { queryClient } from '~/react-query'
 
 type TransferFormData = {
   recipient: string
@@ -113,6 +98,20 @@ export default function TokenTransfer() {
 
       if (receipt.status === 'success') {
         toast.success(`Transfer successful! TX: ${txHash.slice(0, 10)}...`)
+        // invalidate tokens to fetch new ones
+        await queryClient.invalidateQueries({
+          predicate: (query) => {
+              return query.queryKey[0] === 'account-tokens'
+          },
+        })
+
+        // invalidate balances to update
+        await queryClient.invalidateQueries({
+          predicate: (query) =>
+            query.queryKey[0] === 'balance' ||
+            query.queryKey[0] === 'erc20-balance',
+        })
+
         navigate(-1)
       } else {
         toast.error('Transaction reverted')

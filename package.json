@@ -1,10 +1,10 @@
 {
   "name": "devwallet",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "extension": {
     "name": "DW: DevWallet",
-    "description": "Dev Wallet for EVM & Forge"
+    "description": "DevWallet helps your Solidity development workflow. Works great with Forge"
   },
   "scripts": {
     "anvil": "anvil --fork-url https://cloudflare-eth.com",
