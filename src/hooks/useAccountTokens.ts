@@ -29,6 +29,9 @@ export function useAccountTokensQueryOptions(args: UseAccountTokensParameters) {
   return queryOptions({
     enabled: Boolean(address && network.forkBlockNumber),
     queryKey: getAccountTokensQueryKey([client.key, address, stringify(args)]),
+    // Refetch tokens periodically to detect new transfers
+    refetchInterval: 3000,
+    staleTime: 2000,
     async queryFn() {
       if (!address) throw new Error('address is required')
       const tokens = await getAccountTokens(client, {
@@ -110,7 +113,16 @@ export function useAccountTokens({ address }: UseAccountTokensParameters) {
 
   const tokens = useMemo(() => {
     if (!tokensKey) return []
-    return tokensStore.tokens[tokensKey] ?? []
+    const tokensList = tokensStore.tokens[tokensKey] ?? []
+
+    // Deduplicate tokens by address (case-insensitive)
+    const seen = new Set<string>()
+    return tokensList.filter((token) => {
+      const lowerAddress = token.address.toLowerCase()
+      if (seen.has(lowerAddress)) return false
+      seen.add(lowerAddress)
+      return true
+    })
   }, [tokensKey, tokensStore.tokens])
 
   return Object.assign(useQuery(queryOptions), {

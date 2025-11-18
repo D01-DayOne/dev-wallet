@@ -25,11 +25,13 @@ import {
   Stack,
   Text,
 } from '~/design-system'
+// import { getAccountTokensQueryKey } from '~/hooks/useAccountTokens'
 import { useBalance } from '~/hooks/useBalance'
 import { useClient } from '~/hooks/useClient'
 import { useErc20Balance } from '~/hooks/useErc20Balance'
 import { useErc20Metadata } from '~/hooks/useErc20Metadata'
 import { useWriteContract } from '~/hooks/useWriteContract'
+import { queryClient } from '~/react-query'
 
 type TransferFormData = {
   recipient: string
@@ -113,6 +115,29 @@ export default function TokenTransfer() {
 
       if (receipt.status === 'success') {
         toast.success(`Transfer successful! TX: ${txHash.slice(0, 10)}...`)
+
+        // Invalidate account tokens query to refetch and detect new tokens
+        console.log('Invalidating account tokens query for:', accountAddress)
+        await queryClient.invalidateQueries({
+          predicate: (query) => {
+            const matches = query.queryKey[0] === 'account-tokens'
+            if (matches) {
+              console.log(
+                'Found account-tokens query to invalidate:',
+                query.queryKey,
+              )
+            }
+            return matches
+          },
+        })
+
+        // Also invalidate balances since they changed
+        await queryClient.invalidateQueries({
+          predicate: (query) =>
+            query.queryKey[0] === 'balance' ||
+            query.queryKey[0] === 'erc20-balance',
+        })
+
         navigate(-1)
       } else {
         toast.error('Transaction reverted')

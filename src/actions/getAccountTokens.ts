@@ -1,9 +1,7 @@
-import { type Address, parseAbiItem } from 'abitype'
+import type { Address } from 'abitype'
 import type { GetLogsParameters } from 'viem'
 import { erc20Abi } from 'viem'
 
-import { getLogsQueryOptions } from '~/hooks/useGetLogs'
-import { queryClient } from '~/react-query'
 import type { Client } from '~/viem'
 
 export async function getAccountTokens(
@@ -18,40 +16,55 @@ export async function getAccountTokens(
     toBlock: GetLogsParameters['toBlock']
   },
 ) {
-  console.log('getAccountTokens params:', { address, fromBlock, toBlock })
+  const effectiveFromBlock = 0n
+  const effectiveToBlock = toBlock ?? 'latest'
+
+  console.log('Effective blocks:', {
+    effectiveFromBlock,
+    effectiveToBlock,
+    originalFromBlock: fromBlock,
+  })
+
+  // Transfer event signature hash (keccak256 of "Transfer(address,address,uint256)")
+  const transferEventSignature =
+    '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef' as const
+
+  // Pad address to 32 bytes for topic matching
+  const paddedAddress = `0x000000000000000000000000${address
+    .slice(2)
+    .toLowerCase()}` as const
 
   const [transfersFrom, transfersTo] = await Promise.all([
-    queryClient.fetchQuery(
-      getLogsQueryOptions(client, {
-        event: parseAbiItem(
-          'event Transfer(address indexed from, address indexed to, uint256)',
-        ),
-        args: {
-          from: address,
-        },
-        fromBlock,
-        toBlock,
+    // Transfers FROM this address: topic[1] = address
+    client
+      .getLogs({
+        fromBlock: effectiveFromBlock,
+        toBlock: effectiveToBlock,
+        topics: [transferEventSignature, paddedAddress],
+      } as any) // Type assertion needed for raw topics API
+      .catch((err) => {
+        console.error('Error fetching transfersFrom:', err)
+        return []
       }),
-    ),
-    queryClient.fetchQuery(
-      getLogsQueryOptions(client, {
-        event: parseAbiItem(
-          'event Transfer(address indexed from, address indexed to, uint256)',
-        ),
-        args: {
-          to: address,
-        },
-        fromBlock,
-        toBlock,
+    // Transfers TO this address: topic[2] = address
+    client
+      .getLogs({
+        fromBlock: effectiveFromBlock,
+        toBlock: effectiveToBlock,
+        topics: [transferEventSignature, null, paddedAddress],
+      } as any) // Type assertion needed for raw topics API
+      .catch((err) => {
+        console.error('Error fetching transfersTo:', err)
+        return []
       }),
-    ),
   ])
-    // console.log(transfersFrom, transfersTo, 'transfers');
+
+  const relevantTransfers = [...transfersFrom, ...transfersTo]
+
   const potentialTokens = [
-    ...new Set([
-      ...(transfersFrom?.map((t) => t.address) || []),
-      ...(transfersTo?.map((t) => t.address) || []),
-    ]),
+    ...new Set(
+      relevantTransfers.map((t) => t.address.toLowerCase() as Address),
+    ),
   ]
 
   const erc20Tokens = await Promise.all(
@@ -62,10 +75,15 @@ export async function getAccountTokens(
           abi: erc20Abi,
           functionName: 'decimals',
         })
-        return typeof decimals === 'number' && decimals >= 0 && decimals <= 255
-          ? tokenAddress
-          : null
-      } catch {
+        const isValid =
+          typeof decimals === 'number' && decimals >= 0 && decimals <= 255
+        if (!isValid) {
+          console.warn(
+            `Token ${tokenAddress} has invalid decimals: ${decimals}. Skipping.`,
+          )
+        }
+        return isValid ? tokenAddress : null
+      } catch (_err) {
         return null
       }
     }),

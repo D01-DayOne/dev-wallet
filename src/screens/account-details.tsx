@@ -205,7 +205,7 @@ function TokenRow({ accountAddress, tokenAddress }: TokenRowProps) {
     address: accountAddress,
   })
 
-  const { removeToken } = useAccountTokens({
+  const { removeToken, hideToken } = useAccountTokens({
     address: accountAddress,
   })
 
@@ -281,6 +281,16 @@ function TokenRow({ accountAddress, tokenAddress }: TokenRowProps) {
                           height="16px"
                           text={tokenAddress!}
                           variant="ghost primary"
+                        />
+                        <Button.Symbol
+                          label="Hide token"
+                          symbol="trash"
+                          height="16px"
+                          variant="ghost red"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            hideToken({ tokenAddress: tokenAddress! })
+                          }}
                         />
                       </Inline>
                     )}
